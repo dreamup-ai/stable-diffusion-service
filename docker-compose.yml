@@ -1,7 +1,7 @@
 services:
   stable-diffusion-service:
     image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:base
-    runtime: nvidia
+    # runtime: nvidia
     network_mode: host
     build:
       context: ./
