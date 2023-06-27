@@ -78,7 +78,7 @@ RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_lineart/resolve/mai
   -O /models/lllyasviel/control_v11p_sd15_lineart/diffusion_pytorch_model.fp16.safetensors
 
 # Lineart Anime
-RUN GIT_LFS_SKIP_SMUDGE=1 git clone https://huggingface.co/lllyasviel/control_v11p_sd15_lineart_anime \
-  /models/lllyasviel/control_v11p_sd15_lineart_anime
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_lineart_anime/resolve/main/diffusion_pytorch_model.fp16.safetensors \
-  -O /models/lllyasviel/control_v11p_sd15_lineart_anime/diffusion_pytorch_model.fp16.safetensors
+RUN GIT_LFS_SKIP_SMUDGE=1 git clone https://huggingface.co/lllyasviel/control_v11p_sd15s2_lineart_anime \
+  /models/lllyasviel/lllyasviel/control_v11p_sd15s2_lineart_anime
+RUN wget https://huggingface.co/lllyasviel/lllyasviel/control_v11p_sd15s2_lineart_anime/resolve/main/diffusion_pytorch_model.fp16.safetensors \
+  -O /models/lllyasviel/control_v11p_sd15s2_lineart_anime/diffusion_pytorch_model.fp16.safetensors
