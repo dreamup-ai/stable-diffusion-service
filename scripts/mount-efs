@@ -1,0 +1,8 @@
+#! /usr/bin/env bash
+
+sudo mkdir /models
+sudo mount \
+-t nfs4 \
+-o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 \
+fs-028d9b47cd3b8a7d7.efs.us-east-1.amazonaws.com:/ /models
+sudo chmod go+rw /models
