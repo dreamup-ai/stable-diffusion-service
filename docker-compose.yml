@@ -13,7 +13,6 @@ services:
       - PORT=1111
       - MODEL_DIR=/models
       - MODELS=Lykon/DreamShaper,prompthero/openjourney-v4
-      - PYTORCH_CUDA_ALLOC_CONF='backend:cudaMallocAsync'
     volumes:
       - /models:/models
     deploy:
