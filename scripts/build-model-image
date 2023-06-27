@@ -5,7 +5,7 @@ MODEL_ID=$1
 # Lowercase, replace / with -, and remove all other non-alphanumeric characters
 MODEL_TAG=$(echo $MODEL_ID | tr '[:upper:]' '[:lower:]' | tr '/' '-')
 
-mkdir -p ./models/$MODEL_ID
+sudo mkdir -p ./models/$MODEL_ID
 
 # If the directory is empty, copy the model from EFS
 if [ -z "$(ls -A ./models/$MODEL_ID)" ]; then
