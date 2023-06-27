@@ -36,9 +36,6 @@ RUN pip install --upgrade --no-cache-dir --extra-index-url https://download.pyto
   torchsde \
   cython
 
-# This must be installed after torch
-# RUN pip3 install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/nightly/cu118 \
-#   xformers
 
 # These are things that update frequently
 RUN pip install --upgrade --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cu121 \
