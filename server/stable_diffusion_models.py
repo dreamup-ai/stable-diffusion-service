@@ -155,6 +155,8 @@ for model_name in configured_models:
         ]
     )
 
+    models[model_name] = {}
+
     models[model_name]["pipelines"] = {
         "text2img": {
             "pipeline": text2img,
