@@ -1,6 +1,6 @@
 services:
   stable-diffusion-service:
-    image: scripts/push-base-image
+    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:base
     runtime: nvidia
     build:
       context: ./
