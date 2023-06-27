@@ -1,6 +1,6 @@
 services:
   stable-diffusion-service:
-    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:base
+    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:lykon-dreamshaper
     # runtime: nvidia
     network_mode: host
     build:
@@ -13,8 +13,8 @@ services:
       - PORT=1111
       - MODEL_DIR=/models
       - MODELS=Lykon/DreamShaper,prompthero/openjourney-v4
-    volumes:
-      - /models:/models
+    # volumes:
+      # - /models:/models
     deploy:
       resources:
         reservations:
