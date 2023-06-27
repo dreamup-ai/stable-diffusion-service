@@ -15,7 +15,7 @@ services:
       - MODELS=Lykon/DreamShaper,prompthero/openjourney-v4
       - PYTORCH_CUDA_ALLOC_CONF='backend:cudaMallocAsync'
     volumes:
-      - ./models:/models
+      - /models:/models
     deploy:
       resources:
         reservations:
