@@ -51,4 +51,4 @@ RUN pip3 install --upgrade --no-cache-dir --extra-index-url https://download.pyt
 
 COPY ./server ./server
 
-CMD ["python3", "server"]
+CMD ["python3", "server/app.py"]
