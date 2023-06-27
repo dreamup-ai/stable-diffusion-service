@@ -2,4 +2,4 @@ FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:base
 
 ARG MODEL_ID
 
-COPY /models/${MODEL_ID} /models/${MODEL_ID}
+COPY ./models/${MODEL_ID} /models/${MODEL_ID}
