@@ -16,4 +16,11 @@ services:
       - PYTORCH_CUDA_ALLOC_CONF='backend:cudaMallocAsync'
     volumes:
       - ./models:/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     
