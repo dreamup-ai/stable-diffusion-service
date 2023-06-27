@@ -1,0 +1,24 @@
+FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:base
+
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
+RUN apt-get install git-lfs
+RUN git lfs install
+
+ARG SAFETY_CHECKER_ID="CompVis/stable-diffusion-safety-checker"
+ARG FEATURE_EXTRACTOR_ID="openai/clip-vit-base-patch32"
+
+RUN git clone https://huggingface.co/${SAFETY_CHECKER_ID} /models/${SAFETY_CHECKER_ID}
+RUN git clone https://huggingface.co/${FEATURE_EXTRACTOR_ID} /models/${FEATURE_EXTRACTOR_ID}
+
+# Get all the controlnet models
+RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_canny /models/lllyasviel/control_v11p_sd15_canny
+RUN git clone https://huggingface.co/lllyasviel/control_v11f1p_sd15_depth /models/lllyasviel/control_v11f1p_sd15_depth
+RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_mlsd /models/lllyasviel/control_v11p_sd15_mlsd
+RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_normalbae /models/lllyasviel/control_v11p_sd15_normalbae
+RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_openpose /models/lllyasviel/control_v11p_sd15_openpose
+RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_scribble /models/lllyasviel/control_v11p_sd15_scribble
+RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_softedge /models/lllyasviel/control_v11p_sd15_softedge
+RUN git clone https://huggingface.co/lllyasviel/control_v11e_sd15_shuffle /models/lllyasviel/control_v11e_sd15_shuffle
+RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_seg /models/lllyasviel/control_v11p_sd15_seg
+RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_lineart /models/lllyasviel/control_v11p_sd15_lineart
+RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15s2_lineart_anime /models/lllyasviel/control_v11p_sd15s2_lineart_anime
