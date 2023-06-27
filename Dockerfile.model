@@ -1,5 +1,14 @@
 FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:base
 
-ARG MODEL_ID
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+RUN apt-get install git-lfs
+RUN git lfs install
 
-COPY ./models/${MODEL_ID} /models/${MODEL_ID}
+ARG MODEL_ID
+ARG SAFETY_CHECKER_ID="CompVis/stable-diffusion-safety-checker"
+ARG FEATURE_EXTRACTOR_ID="openai/clip-vit-base-patch32"
+
+RUN git clone https://huggingface.co/${SAFETY_CHECKER_ID} /model/${SAFETY_CHECKER_ID}
+RUN git clone https://huggingface.co/${FEATURE_EXTRACTOR_ID} /model/${FEATURE_EXTRACTOR_ID}
+
+RUN git clone https://huggingface.co/${MODEL_ID} /model/${MODEL_ID}
