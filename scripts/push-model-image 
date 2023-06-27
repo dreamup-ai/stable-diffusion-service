@@ -3,6 +3,6 @@
 MODEL_ID=$1
 
 # Lowercase, replace / with -, and remove all other non-alphanumeric characters
-MODEL_TAG=$(echo $MODEL_ID | tr '[:upper:]' '[:lower:]' | tr '/' '-' | tr -cd '[:alnum:]')
+MODEL_TAG=$(echo $MODEL_ID | tr '[:upper:]' '[:lower:]' | tr '/' '-')
 
 docker push public.ecr.aws/i0t3i1w9/stable-diffusion-server:$MODEL_TAG

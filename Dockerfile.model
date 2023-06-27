@@ -1,5 +1,5 @@
 FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:base
 
-ARG model_id
+ARG MODEL_ID
 
-COPY /models/${model_id} /models/${model_id}
+COPY /models/${MODEL_ID} /models/${MODEL_ID}
