@@ -14,7 +14,7 @@ from __version__ import VERSION
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 
-log.info("Version: ", VERSION)
+log.info("Version: " + VERSION)
 
 # Load config from the environment
 host = os.environ.get("HOST", "localhost")
