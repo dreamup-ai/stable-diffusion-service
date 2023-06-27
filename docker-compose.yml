@@ -1,0 +1,17 @@
+services:
+  stable-diffusion-service:
+    image: scripts/push-base-image
+    runtime: nvidia
+    build:
+      context: ./
+      dockerfile: Dockerfile.base
+    ports:
+      - "1111:1111"
+    environment:
+      - HOST=*
+      - PORT=1111
+      - MODEL_DIR=/models
+      - MODELS=Lykon/DreamShaper,prompthero/openjourney-v4
+    volumes:
+      - ./models:/models
+    

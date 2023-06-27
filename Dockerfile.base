@@ -49,3 +49,6 @@ RUN pip3 install --upgrade --no-cache-dir --extra-index-url https://download.pyt
   compel \
   timm
 
+COPY ./server ./server
+
+CMD ["python3", "server"]
