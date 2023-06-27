@@ -5,6 +5,7 @@ MODEL_ID=$1
 # Lowercase, replace / with -, and remove all other non-alphanumeric characters
 MODEL_TAG=$(echo $MODEL_ID | tr '[:upper:]' '[:lower:]' | tr '/' '-')
 
+mkdir -p models/$MODEL_ID
 ln -s /models/$MODEL_ID ./models/$MODEL_ID
 
 docker build \
