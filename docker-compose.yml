@@ -12,7 +12,7 @@ services:
       - HOST=*
       - PORT=1111
       - MODEL_DIR=/models
-      - MODELS=Lykon/DreamShaper,prompthero/openjourney-v4
+      - MODELS=Lykon/DreamShaper
     # volumes:
       # - /models:/models
     deploy:
