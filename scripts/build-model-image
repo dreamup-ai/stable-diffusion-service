@@ -1,0 +1,11 @@
+#! /usr/bin/env bash
+
+MODEL_ID=$1
+
+# Lowercase, replace / with -, and remove all other non-alphanumeric characters
+MODEL_TAG=$(echo $MODEL_ID | tr '[:upper:]' '[:lower:]' | tr '/' '-' | tr -cd '[:alnum:]')
+
+docker build \
+-t public.ecr.aws/i0t3i1w9/stable-diffusion-server:$MODEL_TAG \
+--build-arg MODEL_ID=$MODEL_ID \
+-f Dockerfile.model .
