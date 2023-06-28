@@ -34,7 +34,8 @@ RUN pip install --upgrade --no-cache-dir --extra-index-url https://download.pyto
   torch==2.0.1 \
   torchvision \
   torchsde \
-  cython
+  cython \
+  safetensors
 
 
 # These are things that update frequently

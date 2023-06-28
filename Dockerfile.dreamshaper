@@ -8,3 +8,4 @@ RUN wget https://huggingface.co/Lykon/DreamShaper/resolve/main/unet/diffusion_py
   -O /models/Lykon/DreamShaper/unet/diffusion_pytorch_model.bin
 RUN wget https://huggingface.co/Lykon/DreamShaper/resolve/main/vae/diffusion_pytorch_model.bin \
   -O /models/Lykon/DreamShaper/vae/diffusion_pytorch_model.bin
+RUN rm -rf /models/Lykon/DreamShaper/.git*

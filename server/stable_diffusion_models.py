@@ -54,7 +54,9 @@ start = time.perf_counter()
 for model_type, repo_name in control_net_model_types.items():
     logging.info(f"Loading control net model {model_type}...")
     model = ControlNetModel.from_pretrained(
-        os.path.join(model_dir, repo_name), torch_dtype=torch.float16
+        os.path.join(model_dir, repo_name),
+        torch_dtype=torch.float16,
+        use_safetensors=True,
     )
     control_net_models[model_type] = model
     logging.info(f"Loaded control net model {model_type}")

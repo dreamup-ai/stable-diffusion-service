@@ -8,80 +8,90 @@ RUN apt-get install -y wget
 ARG SAFETY_CHECKER_ID="CompVis/stable-diffusion-safety-checker"
 ARG FEATURE_EXTRACTOR_ID="openai/clip-vit-base-patch32"
 
-# Safety Checker
 RUN git clone https://huggingface.co/${SAFETY_CHECKER_ID} /models/${SAFETY_CHECKER_ID}
-RUN wget https://huggingface.co/${SAFETY_CHECKER_ID}/resolve/main/pytorch_model.bin \
+RUN wget https://huggingface.co/${SAFETY_CHECKER_ID}}/resolve/main/pytorch_model.bin \
   -O /models/${SAFETY_CHECKER_ID}/pytorch_model.bin
 
-# Feature Extractor
 RUN git clone https://huggingface.co/${FEATURE_EXTRACTOR_ID} \
   /models/${FEATURE_EXTRACTOR_ID}
 RUN wget https://huggingface.co/openai/clip-vit-base-patch32/resolve/main/pytorch_model.bin \
   -O /models/${FEATURE_EXTRACTOR_ID}/pytorch_model.bin
 
+
 # Get all the controlnet models
 # Canny
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_canny \
   /models/lllyasviel/control_v11p_sd15_canny
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_canny/resolve/main/diffusion_pytorch_model.fp16.bin \
-  -O /models/lllyasviel/control_v11p_sd15_canny/diffusion_pytorch_model.fp16.bin
+RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_canny/resolve/main/diffusion_pytorch_model.fp16.safetensors \
+  -O /models/lllyasviel/control_v11p_sd15_canny/diffusion_pytorch_model.fp16.safetensors
+RUN rm -rf /models/lllyasviel/control_v11p_sd15_canny/.git*
 
 # Depth
 RUN git clone https://huggingface.co/lllyasviel/control_v11f1p_sd15_depth \
   /models/lllyasviel/control_v11f1p_sd15_depth
-RUN wget https://huggingface.co/lllyasviel/control_v11f1p_sd15_depth/resolve/main/diffusion_pytorch_model.fp16.bin \
-  -O /models/lllyasviel/control_v11f1p_sd15_depth/diffusion_pytorch_model.fp16.bin
+RUN wget https://huggingface.co/lllyasviel/control_v11f1p_sd15_depth/resolve/main/diffusion_pytorch_model.fp16.safetensors \
+  -O /models/lllyasviel/control_v11f1p_sd15_depth/diffusion_pytorch_model.fp16.safetensors
+RUN rm -rf /models/lllyasviel/control_v11f1p_sd15_depth/.git*
 
 # MLSD
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_mlsd \
   /models/lllyasviel/control_v11p_sd15_mlsd
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_mlsd/resolve/main/diffusion_pytorch_model.fp16.bin \
-  -O /models/lllyasviel/control_v11p_sd15_mlsd/diffusion_pytorch_model.fp16.bin
+RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_mlsd/resolve/main/diffusion_pytorch_model.fp16.safetensors \
+  -O /models/lllyasviel/control_v11p_sd15_mlsd/diffusion_pytorch_model.fp16.safetensors
+RUN rm -rf /models/lllyasviel/control_v11p_sd15_mlsd/.git*
 
 # Normalbae
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_normalbae \
   /models/lllyasviel/control_v11p_sd15_normalbae
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_normalbae/resolve/main/diffusion_pytorch_model.fp16.bin \
-  -O /models/lllyasviel/control_v11p_sd15_normalbae/diffusion_pytorch_model.fp16.bin
+RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_normalbae/resolve/main/diffusion_pytorch_model.fp16.safetensors \
+  -O /models/lllyasviel/control_v11p_sd15_normalbae/diffusion_pytorch_model.fp16.safetensors
+RUN rm -rf /models/lllyasviel/control_v11p_sd15_normalbae/.git*
 
 # Openpose
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_openpose \
   /models/lllyasviel/control_v11p_sd15_openpose
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_openpose/resolve/main/diffusion_pytorch_model.fp16.bin \
-  -O /models/lllyasviel/control_v11p_sd15_openpose/diffusion_pytorch_model.fp16.bin
+RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_openpose/resolve/main/diffusion_pytorch_model.fp16.safetensors \
+  -O /models/lllyasviel/control_v11p_sd15_openpose/diffusion_pytorch_model.fp16.safetensors
+RUN rm -rf /models/lllyasviel/control_v11p_sd15_openpose/.git*
 
 # Scribble
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_scribble \
   /models/lllyasviel/control_v11p_sd15_scribble
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_scribble/resolve/main/diffusion_pytorch_model.fp16.bin \
-  -O /models/lllyasviel/control_v11p_sd15_scribble/diffusion_pytorch_model.fp16.bin
+RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_scribble/resolve/main/diffusion_pytorch_model.fp16.safetensors \
+  -O /models/lllyasviel/control_v11p_sd15_scribble/diffusion_pytorch_model.fp16.safetensors
+RUN rm -rf /models/lllyasviel/control_v11p_sd15_scribble/.git*
 
 # Softedge
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_softedge \
   /models/lllyasviel/control_v11p_sd15_softedge
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_softedge/resolve/main/diffusion_pytorch_model.fp16.bin \
-  -O /models/lllyasviel/control_v11p_sd15_softedge/diffusion_pytorch_model.fp16.bin
+RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_softedge/resolve/main/diffusion_pytorch_model.fp16.safetensors \
+  -O /models/lllyasviel/control_v11p_sd15_softedge/diffusion_pytorch_model.fp16.safetensors
+RUN rm -rf /models/lllyasviel/control_v11p_sd15_softedge/.git*
 
 # Shuffle
 RUN git clone https://huggingface.co/lllyasviel/control_v11e_sd15_shuffle \
   /models/lllyasviel/control_v11e_sd15_shuffle
-RUN wget https://huggingface.co/lllyasviel/control_v11e_sd15_shuffle/resolve/main/diffusion_pytorch_model.fp16.bin \
-  -O /models/lllyasviel/control_v11e_sd15_shuffle/diffusion_pytorch_model.fp16.bin
+RUN wget https://huggingface.co/lllyasviel/control_v11e_sd15_shuffle/resolve/main/diffusion_pytorch_model.fp16.safetensors \
+  -O /models/lllyasviel/control_v11e_sd15_shuffle/diffusion_pytorch_model.fp16.safetensors
+RUN rm -rf /models/lllyasviel/control_v11e_sd15_shuffle/.git*
 
 # Segmentation
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_seg \
   /models/lllyasviel/control_v11p_sd15_seg
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_seg/resolve/main/diffusion_pytorch_model.fp16.bin \
-  -O /models/lllyasviel/control_v11p_sd15_seg/diffusion_pytorch_model.fp16.bin
+RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_seg/resolve/main/diffusion_pytorch_model.fp16.safetensors \
+  -O /models/lllyasviel/control_v11p_sd15_seg/diffusion_pytorch_model.fp16.safetensors
+RUN rm -rf /models/lllyasviel/control_v11p_sd15_seg/.git*
 
 # Lineart
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_lineart \
   /models/lllyasviel/control_v11p_sd15_lineart
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_lineart/resolve/main/diffusion_pytorch_model.fp16.bin \
-  -O /models/lllyasviel/control_v11p_sd15_lineart/diffusion_pytorch_model.fp16.bin
+RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_lineart/resolve/main/diffusion_pytorch_model.fp16.safetensors \
+  -O /models/lllyasviel/control_v11p_sd15_lineart/diffusion_pytorch_model.fp16.safetensors
+RUN rm -rf /models/lllyasviel/control_v11p_sd15_lineart/.git*
 
 # Lineart Anime
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15s2_lineart_anime \
   /models/lllyasviel/control_v11p_sd15s2_lineart_anime
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15s2_lineart_anime/resolve/main/diffusion_pytorch_model.fp16.bin \
-  -O /models/lllyasviel/control_v11p_sd15s2_lineart_anime/diffusion_pytorch_model.fp16.bin
+RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15s2_lineart_anime/resolve/main/diffusion_pytorch_model.fp16.safetensors \
+  -O /models/lllyasviel/control_v11p_sd15s2_lineart_anime/diffusion_pytorch_model.fp16.safetensors
+RUN rm -rf /models/lllyasviel/control_v11p_sd15s2_lineart_anime/.git*
