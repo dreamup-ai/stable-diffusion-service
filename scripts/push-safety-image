@@ -1,0 +1,6 @@
+#! /usr/bin/env bash
+PYTHON=$(which python3 || which python)
+VERSION=$($PYTHON -c 'from server.__version__ import VERSION; print(VERSION)')
+
+docker push public.ecr.aws/i0t3i1w9/stable-diffusion-server:safety-checker
+docker push public.ecr.aws/i0t3i1w9/stable-diffusion-server:$VERSION-safety-checker
