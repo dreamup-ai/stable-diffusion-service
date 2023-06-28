@@ -1,5 +1,0 @@
-FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:base-models
-
-ARG MODEL_ID
-
-RUN git clone https://huggingface.co/${MODEL_ID} /models/${MODEL_ID}
