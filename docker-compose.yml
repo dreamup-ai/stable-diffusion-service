@@ -13,8 +13,8 @@ services:
       - PORT=1111
       - MODEL_DIR=/models
       - MODELS=Lykon/DreamShaper
-    volumes:
-      - /models:/models
+    # volumes:
+    #   - /models:/models
     deploy:
       resources:
         reservations:
