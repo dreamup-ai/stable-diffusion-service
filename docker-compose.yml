@@ -1,11 +1,11 @@
 services:
   stable-diffusion-service:
-    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:lykon-dreamshaper
+    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:base
     # runtime: nvidia
     network_mode: host
     build:
       context: ./
-      dockerfile: Dockerfile.dreamshaper
+      dockerfile: Dockerfile.base
     ports:
       - "1111:1111"
     environment:
@@ -13,8 +13,8 @@ services:
       - PORT=1111
       - MODEL_DIR=/models
       - MODELS=Lykon/DreamShaper
-    # volumes:
-    #   - /models:/models
+    volumes:
+      - /models:/models
     deploy:
       resources:
         reservations:
