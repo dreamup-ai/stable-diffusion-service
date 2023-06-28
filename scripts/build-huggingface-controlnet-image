@@ -1,0 +1,26 @@
+#! /usr/bin/env bash
+HF_REPO=$1
+
+PYTHON=$(which python3 || which python)
+VERSION=$($PYTHON -c 'from server.__version__ import VERSION; print(VERSION)')
+BASE_TAG=controlnet-slim
+
+# Tag should be the repo name, but lowercase, with / replaced with -
+MY_TAG=$(echo $HF_REPO | tr '[:upper:]' '[:lower:]' | tr '/' '-')-controlnet
+DOCKERFILE=Dockerfile.huggingface-controlnet
+# -slim if BASE_TAG is slim, -full if full
+if [[ $BASE_TAG == *"slim"* ]]; then
+  MY_TAG=$MY_TAG-slim
+  DOCKERFILE=$DOCKERFILE-slim
+else
+  MY_TAG=$MY_TAG-full
+fi
+
+
+docker build \
+-t public.ecr.aws/i0t3i1w9/stable-diffusion-server:$MY_TAG \
+--build-arg BASE_TAG=$BASE_TAG \
+--build-arg HF_REPO=$HF_REPO \
+-f $DOCKERFILE .
+docker tag public.ecr.aws/i0t3i1w9/stable-diffusion-server:$MY_TAG \
+  public.ecr.aws/i0t3i1w9/stable-diffusion-server:$VERSION-$MY_TAG
