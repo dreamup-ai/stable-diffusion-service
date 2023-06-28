@@ -9,7 +9,7 @@ ARG SAFETY_CHECKER_ID="CompVis/stable-diffusion-safety-checker"
 ARG FEATURE_EXTRACTOR_ID="openai/clip-vit-base-patch32"
 
 RUN git clone https://huggingface.co/${SAFETY_CHECKER_ID} /models/${SAFETY_CHECKER_ID}
-RUN wget https://huggingface.co/${SAFETY_CHECKER_ID}}/resolve/main/pytorch_model.bin \
+RUN wget https://huggingface.co/${SAFETY_CHECKER_ID}/resolve/main/pytorch_model.bin \
   -O /models/${SAFETY_CHECKER_ID}/pytorch_model.bin
 
 RUN git clone https://huggingface.co/${FEATURE_EXTRACTOR_ID} \
