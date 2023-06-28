@@ -1,6 +1,6 @@
 FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:base-models
 
-RUN GIT_LFS_SKIP_SMUDGE=1 git clone https://huggingface.co/Lykon/DreamShaper \
+RUN git clone https://huggingface.co/Lykon/DreamShaper \
   /models/Lykon/DreamShaper
 RUN wget https://huggingface.co/Lykon/DreamShaper/resolve/main/text_encoder/pytorch_model.bin \
   -O /models/Lykon/DreamShaper/text_encoder/pytorch_model.bin
