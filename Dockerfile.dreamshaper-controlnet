@@ -1,4 +1,4 @@
-FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:base-models
+FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:controlnet-full
 
 RUN git clone https://huggingface.co/Lykon/DreamShaper \
   /models/Lykon/DreamShaper
@@ -8,4 +8,3 @@ RUN wget https://huggingface.co/Lykon/DreamShaper/resolve/main/unet/diffusion_py
   -O /models/Lykon/DreamShaper/unet/diffusion_pytorch_model.bin
 RUN wget https://huggingface.co/Lykon/DreamShaper/resolve/main/vae/diffusion_pytorch_model.bin \
   -O /models/Lykon/DreamShaper/vae/diffusion_pytorch_model.bin
-RUN rm -rf /models/Lykon/DreamShaper/.git*

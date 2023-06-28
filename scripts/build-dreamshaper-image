@@ -1,5 +1,0 @@
-#! /usr/bin/env bash
-
-docker build \
--t public.ecr.aws/i0t3i1w9/stable-diffusion-server:lykon-dreamshaper \
--f Dockerfile.dreamshaper .
