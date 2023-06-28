@@ -8,11 +8,26 @@ from stable_diffusion_models import (
     feature_extractor,
     control_net_models,
 )
-
+from PIL import Image
 from prompt_tools import get_prompt_embeds
 
 
 logging.getLogger().setLevel(logging.INFO)
+
+
+def resize_image(image):
+    w, h = image.size
+    if w > 1024 and w > h:
+        aspect_ratio = w / h
+        w = 1024
+        h = int(w / aspect_ratio)
+    elif h > 1024 and h > w:
+        aspect_ratio = h / w
+        h = 1024
+        w = int(h / aspect_ratio)
+
+    w, h = map(lambda x: x - x % 32, (w, h))
+    return image.resize((min(w, 1024), h), resample=Image.LANCZOS).convert("RGB")
 
 
 def generate_image(job):
@@ -51,10 +66,14 @@ def generate_image(job):
     params["negative_prompt_embeds"] = negative_prompt_embeds
 
     if "image" in params:
+        params["image"] = resize_image(params["image"])
         width, height = params["image"].size
         params["width"] = width
         params["height"] = height
         logging.info("Dimensions: %s x %s", width, height)
+
+    if "mask_image" in params:
+        params["mask_image"] = resize_image(params["mask_image"])
 
     if pipeline_id == "controlnet":
         if "control_model" not in params:
