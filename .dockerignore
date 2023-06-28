@@ -1,2 +1,4 @@
 /models/lllyasviel/**/*.bin
 /models/lllyasviel/**/diffusion_pytorch_model.safetensors
+/models/**/.h5
+/models/**/.msgpack
