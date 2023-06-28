@@ -1,3 +1,0 @@
-#! /usr/bin/env bash
-
-docker push public.ecr.aws/i0t3i1w9/stable-diffusion-server:base-models
