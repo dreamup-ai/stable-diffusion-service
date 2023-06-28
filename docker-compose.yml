@@ -1,11 +1,11 @@
 services:
   stable-diffusion-service:
-    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:base-models
+    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:controlnet-full
     # runtime: nvidia
     network_mode: host
     build:
       context: ./
-      dockerfile: Dockerfile.base-models
+      dockerfile: Dockerfile.controlnet
     ports:
       - "1111:1111"
     environment:
