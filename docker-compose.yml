@@ -5,7 +5,7 @@ services:
     network_mode: host
     build:
       context: ./
-      dockerfile: Dockerfile.base
+      dockerfile: Dockerfile.dreamshaper
     ports:
       - "1111:1111"
     environment:
