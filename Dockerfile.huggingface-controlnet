@@ -3,6 +3,8 @@ ARG HF_REPO=Lykon/DreamShaper
 
 FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:${BASE_TAG}
 
+RUN echo $BASE_TAG $HF_REPO
+
 RUN git clone https://huggingface.co/${HF_REPO} \
   /models/${HF_REPO}
 RUN wget https://huggingface.co/${HF_REPO}/resolve/main/text_encoder/pytorch_model.bin \
