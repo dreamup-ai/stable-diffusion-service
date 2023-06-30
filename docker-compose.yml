@@ -1,6 +1,6 @@
 services:
   stable-diffusion-service:
-    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:lykon-dreamshaper-controlnet-slim
+    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:nitrosocke-nitro-diffusion-controlnet-slim
     # runtime: nvidia
     network_mode: host
     # build:
