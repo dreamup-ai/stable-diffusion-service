@@ -1,0 +1,12 @@
+#! /usr/bin/env bash
+
+./scripts/build-base-image
+./scripts/push-base-image
+./scripts/build-safety-checker-image
+./scripts/push-safety-image
+./scripts/build-controlnet-slim-image
+./scripts/push-controlnet-slim-image
+./scripts/build-huggingface-controlnet-image nitrosocke/Nitro-Diffusion slim safetensors
+./scripts/push-nitro-diffusion-controlnet-image
+./scripts/build-huggingface-controlnet-image Lykon/DreamShaper slim
+./scripts/push-dreamshaper-controlnet-image
