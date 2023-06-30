@@ -1,6 +1,6 @@
 services:
   stable-diffusion-service:
-    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:nitrosocke-nitro-diffusion-controlnet-slim
+    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:lykon-dreamshaper-controlnet-slim
     # runtime: nvidia
     network_mode: host
     # build:
@@ -12,7 +12,7 @@ services:
       - HOST=*
       - PORT=1111
       - MODEL_DIR=/models
-      - MODELS=nitrosocke/Nitro-Diffusion
+      - MODELS=Lykon/DreamShaper
       - CONTROLNET_MODELS=canny,depth,normal,openpose,scribble,softedge,lineart,lineart_anime
     # volumes:
     #   - /models:/models
