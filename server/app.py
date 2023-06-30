@@ -97,13 +97,16 @@ def image():
                     "gpu_duration": gpu_duration,
                     "scheduler_name": scheduler_name,
                     "request_duration": time.perf_counter() - request_start,
+                    "image_fmt": "png",
                 }
             )
         )
 
     except Exception as e:
         log.error("Error generating image: %s", e)
-        return make_response(jsonify({"error": "Error generating image"}), 500)
+        return make_response(
+            jsonify({"error": "Error generating image", "msg": str(e)}), 500
+        )
 
 
 if __name__ == "__main__":
