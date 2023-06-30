@@ -40,8 +40,8 @@ RUN pip install --upgrade --no-cache-dir --extra-index-url https://download.pyto
 
 # These are things that update frequently
 RUN pip install --upgrade --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cu121 \
-  git+https://github.com/huggingface/diffusers.git \
-  git+https://github.com/huggingface/transformers.git \
+  git+https://github.com/huggingface/diffusers.git#174dcd6 \
+  git+https://github.com/huggingface/transformers.git#49e812d \
   compel \
   timm
 
