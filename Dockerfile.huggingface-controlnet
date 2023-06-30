@@ -16,8 +16,6 @@ RUN if [ "${MODEL_FMT}" = "safetensors" ]; then \
   wget https://huggingface.co/${HF_REPO}/resolve/main/text_encoder/pytorch_model.${MODEL_FMT} \
   -O /models/${HF_REPO}/text_encoder/pytorch_model.${MODEL_FMT}; \
   fi
-RUN wget https://huggingface.co/${HF_REPO}/resolve/main/text_encoder/pytorch_model.${MODEL_FMT} \
-  -O /models/${HF_REPO}/text_encoder/pytorch_model.${MODEL_FMT}
 RUN wget https://huggingface.co/${HF_REPO}/resolve/main/unet/diffusion_pytorch_model.${MODEL_FMT} \
   -O /models/${HF_REPO}/unet/diffusion_pytorch_model.${MODEL_FMT}
 RUN wget https://huggingface.co/${HF_REPO}/resolve/main/vae/diffusion_pytorch_model.${MODEL_FMT} \
