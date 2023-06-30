@@ -50,11 +50,16 @@ control_net_model_types = {
     "lineart": "lllyasviel/control_v11p_sd15_lineart",
     "lineart_anime": "lllyasviel/control_v11p_sd15s2_lineart_anime",
 }
+
+configured_controlnet_models = os.getenv("CONTROLNET_MODELS", "").split(",")
+if len(configured_controlnet_models) == 0:
+    configured_controlnet_models = list(control_net_model_types.keys())
+
 start = time.perf_counter()
-for model_type, repo_name in control_net_model_types.items():
+for model_type in configured_controlnet_models:
     logging.info(f"Loading control net model {model_type}...")
     model = ControlNetModel.from_pretrained(
-        os.path.join(model_dir, repo_name),
+        os.path.join(model_dir, control_net_model_types[model_type]),
         torch_dtype=torch.float16,
         use_safetensors=True,
     )
