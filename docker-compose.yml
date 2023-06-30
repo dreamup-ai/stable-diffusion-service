@@ -14,8 +14,8 @@ services:
       - MODEL_DIR=/models
       - MODELS=Lykon/DreamShaper
       - CONTROLNET_MODELS=canny,depth,normal,openpose,scribble,softedge,lineart,lineart_anime
-    volumes:
-      - /models:/models
+    # volumes:
+    #   - /models:/models
     deploy:
       resources:
         reservations:
