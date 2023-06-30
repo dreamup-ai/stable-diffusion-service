@@ -2,5 +2,5 @@
 PYTHON=$(which python3 || which python)
 VERSION=$($PYTHON -c 'from server.__version__ import VERSION; print(VERSION)')
 
-docker push public.ecr.aws/i0t3i1w9/stable-diffusion-server:lykon-dreamshaper-controlnet
-docker push public.ecr.aws/i0t3i1w9/stable-diffusion-server:$VERSION-lykon-dreamshaper-controlnet
+docker push public.ecr.aws/i0t3i1w9/stable-diffusion-server:lykon-dreamshaper-controlnet-slim
+docker push public.ecr.aws/i0t3i1w9/stable-diffusion-server:$VERSION-lykon-dreamshaper-controlnet-slim
