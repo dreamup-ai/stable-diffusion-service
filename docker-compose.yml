@@ -12,7 +12,7 @@ services:
       - HOST=*
       - PORT=1111
       - MODEL_DIR=/models
-      - MODELS=Lykon/DreamShaper
+      - MODELS=nitrosocke/Nitro-Diffusion
       - CONTROLNET_MODELS=canny,depth,normal,openpose,scribble,softedge,lineart,lineart_anime
     # volumes:
     #   - /models:/models
