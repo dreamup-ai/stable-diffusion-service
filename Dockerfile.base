@@ -43,7 +43,8 @@ RUN pip install --upgrade --no-cache-dir --extra-index-url https://download.pyto
   git+https://github.com/huggingface/diffusers.git#174dcd6 \
   git+https://github.com/huggingface/transformers.git#49e812d \
   compel \
-  timm
+  timm \
+  google
 
 COPY ./server ./server
 
