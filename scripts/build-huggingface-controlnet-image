@@ -1,9 +1,11 @@
 #! /usr/bin/env bash
 HF_REPO=$1
+CONTROLNETS=${2:-slim}
+MODEL_FMT=${3:-bin}
 
 PYTHON=$(which python3 || which python)
 VERSION=$($PYTHON -c 'from server.__version__ import VERSION; print(VERSION)')
-BASE_TAG=controlnet-slim
+BASE_TAG=controlnet-$CONTROLNETS
 
 # Tag should be the repo name, but lowercase, with / replaced with -
 MY_TAG=$(echo $HF_REPO | tr '[:upper:]' '[:lower:]' | tr '/' '-')-controlnet
@@ -22,6 +24,7 @@ docker build \
 -t public.ecr.aws/i0t3i1w9/stable-diffusion-server:$MY_TAG \
 --build-arg BASE_TAG="$BASE_TAG" \
 --build-arg HF_REPO="$HF_REPO" \
+--build-arg MODEL_FMT="$MODEL_FMT" \
 -f $DOCKERFILE .
 docker tag public.ecr.aws/i0t3i1w9/stable-diffusion-server:$MY_TAG \
   public.ecr.aws/i0t3i1w9/stable-diffusion-server:$VERSION-$MY_TAG

@@ -3,12 +3,13 @@ ARG BASE_TAG=controlnet-full
 FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:${BASE_TAG}
 
 ARG HF_REPO=Lykon/DreamShaper
+ARG MODEL_FMT=bin
 
 RUN git clone https://huggingface.co/${HF_REPO} \
   /models/${HF_REPO}
-RUN wget https://huggingface.co/${HF_REPO}/resolve/main/text_encoder/pytorch_model.bin \
+RUN wget https://huggingface.co/${HF_REPO}/resolve/main/text_encoder/pytorch_model.${MODEL_FMT} \
   -O /models/${HF_REPO}/text_encoder/pytorch_model.bin
-RUN wget https://huggingface.co/${HF_REPO}/resolve/main/unet/diffusion_pytorch_model.bin \
+RUN wget https://huggingface.co/${HF_REPO}/resolve/main/unet/diffusion_pytorch_model.${MODEL_FMT} \
   -O /models/${HF_REPO}/unet/diffusion_pytorch_model.bin
-RUN wget https://huggingface.co/${HF_REPO}/resolve/main/vae/diffusion_pytorch_model.bin \
+RUN wget https://huggingface.co/${HF_REPO}/resolve/main/vae/diffusion_pytorch_model.${MODEL_FMT} \
   -O /models/${HF_REPO}/vae/diffusion_pytorch_model.bin
