@@ -1,6 +1,6 @@
 services:
   stable-diffusion-service:
-    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:base
+    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:0.1.2
     # runtime: nvidia
     network_mode: host
     # build:
