@@ -1,6 +1,6 @@
 services:
   stable-diffusion-service:
-    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:0.1.2
+    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:0.1.2-lykon-dreamshaper-controlnet-slim
     # runtime: nvidia
     network_mode: host
     # build:
@@ -14,8 +14,8 @@ services:
       - MODEL_DIR=/models
       - MODELS=Lykon/DreamShaper
       - CONTROLNET_MODELS=canny,depth,normal,openpose,scribble,softedge,lineart,lineart_anime
-    volumes:
-      - /models:/models
+    # volumes:
+    #   - /models:/models
     deploy:
       resources:
         reservations:
