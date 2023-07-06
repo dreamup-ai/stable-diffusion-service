@@ -162,7 +162,10 @@ for model_name in configured_models:
         ]
     )
 
-    models[model_name] = {}
+    models[model_name] = {
+        "default_scheduler": "DPMSolverMultistepScheduler",
+        "default_num_iterations": 25,
+    }
 
     models[model_name]["pipelines"] = {
         "text2img": {
