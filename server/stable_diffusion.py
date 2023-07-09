@@ -67,6 +67,8 @@ def generate_image(job):
 
         params["prompt_embeds"] = prompt_embeds
         params["negative_prompt_embeds"] = negative_prompt_embeds
+
+        # Remove prompt and negative_prompt from params if we're using compel
         del params["prompt"]
         if "negative_prompt" in params:
             del params["negative_prompt"]
