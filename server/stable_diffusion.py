@@ -48,22 +48,27 @@ def generate_image(job):
     clean = model["pipelines"][pipeline_id]["sanitize"]
     compel = model["compel"]
 
-    prompt_embeds = get_prompt_embeds(compel, params["prompt"])
+    try:
+        prompt_embeds = get_prompt_embeds(compel, params["prompt"])
 
-    if "negative_prompt" in params:
-        negative_prompt_embeds = get_prompt_embeds(compel, params["negative_prompt"])
-    else:
-        negative_prompt_embeds = get_prompt_embeds(compel, "")
+        if "negative_prompt" in params:
+            negative_prompt_embeds = get_prompt_embeds(
+                compel, params["negative_prompt"]
+            )
+        else:
+            negative_prompt_embeds = get_prompt_embeds(compel, "")
 
-    [
-        prompt_embeds,
-        negative_prompt_embeds,
-    ] = compel.pad_conditioning_tensors_to_same_length(
-        [prompt_embeds, negative_prompt_embeds]
-    )
+        [
+            prompt_embeds,
+            negative_prompt_embeds,
+        ] = compel.pad_conditioning_tensors_to_same_length(
+            [prompt_embeds, negative_prompt_embeds]
+        )
 
-    params["prompt_embeds"] = prompt_embeds
-    params["negative_prompt_embeds"] = negative_prompt_embeds
+        params["prompt_embeds"] = prompt_embeds
+        params["negative_prompt_embeds"] = negative_prompt_embeds
+    except Exception as e:
+        logging.error("Error parsing prompt: %s; Using without weights", e)
 
     if "image" in params:
         params["image"] = resize_image(params["image"])
