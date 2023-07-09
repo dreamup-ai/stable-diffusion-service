@@ -3,9 +3,9 @@ services:
     image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:0.1.3
     # runtime: nvidia
     network_mode: host
-    # build:
-    #   context: ./
-    #   dockerfile: Dockerfile.base
+    build:
+      context: ./
+      dockerfile: Dockerfile.base
     ports:
       - "1111:1111"
     environment:
