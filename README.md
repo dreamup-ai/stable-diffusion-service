@@ -75,7 +75,7 @@ There are several tags available that offer different levels of baked-in functio
 
 - `base`, `0.1.4`: This is the base image. It contains inference code and dependencies, but no models. It is intended to be used as a base for custom images, or in a situation where you want to mount models from a volume instead of baking them into the image. This is the recommended image to use if you are running this server locally, or in a cloud that supports elastic file systems (EFS).
 - `safety-checker`, `0.1.4-safety-checker`: This image contains the inference code and the safety checker models ONLY. This is really only intended to be a base image upon which you would load controlnet models and a stable diffusion model.
-- `controlnet-slim`, `0.1.4-controlnet-slim`: This image contains the inference code and the controlnet models that are used in Dreamup.ai production. It is intended to be used as a base model. It notable excludes the following controlnet models:
+- `controlnet-slim`, `0.1.4-controlnet-slim`: This image contains the inference code and the controlnet models that are used in Dreamup.ai production. It is intended to be used as a base model. It notably excludes the following controlnet models:
   - segmentation
   - mlsd
   - shuffle
