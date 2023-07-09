@@ -104,7 +104,7 @@ def image():
         )
 
     except Exception as e:
-        log.error("Error generating image: %s", e)
+        log.error("Error generating image: %s", e, exc_info=True)
         return make_response(
             jsonify(
                 {
