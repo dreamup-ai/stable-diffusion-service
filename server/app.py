@@ -1,4 +1,5 @@
 from flask import Flask, request, make_response, jsonify, send_file
+import traceback
 from PIL import Image
 from io import BytesIO
 import os
@@ -105,7 +106,14 @@ def image():
     except Exception as e:
         log.error("Error generating image: %s", e)
         return make_response(
-            jsonify({"error": "Error generating image", "msg": str(e)}), 500
+            jsonify(
+                {
+                    "error": "Error generating image",
+                    "msg": str(e),
+                    "traceback": traceback.format_exc(),
+                }
+            ),
+            500,
         )
 
 
