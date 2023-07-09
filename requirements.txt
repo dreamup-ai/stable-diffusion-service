@@ -9,7 +9,7 @@ click==8.1.3
 cmake==3.26.4
 compel==1.2.1
 Cython==0.29.35
-diffusers @ git+https://github.com/huggingface/diffusers.git@174dcd697faf88370f1e7b2eeabb059dd8f1b2f4
+diffusers @ git+https://github.com/huggingface/diffusers.git@78922ed7c7e66c20aa95159c7b7a6057ba7d590d
 filelock==3.12.2
 Flask==2.3.2
 fsspec==2023.6.0
@@ -57,7 +57,7 @@ torchsde==0.2.5
 torchvision==0.15.2
 tqdm==4.65.0
 trampoline==0.1.2
-transformers @ git+https://github.com/huggingface/transformers.git@78a2b19fc84ed55c65f4bf20a901edb7ceb73c5f
+transformers @ git+https://github.com/huggingface/transformers.git@abaca9f9432a84cfaa95531de4c72334f38a42f2
 triton==2.0.0
 typing_extensions==4.7.0
 urllib3==1.26.16

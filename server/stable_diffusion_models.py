@@ -183,15 +183,15 @@ for model_name in configured_models:
         truncate_long_prompts=False,
     )
     models[model_name]["schedulers"] = {}
-    # Print the difference between the text2img schedulers and the controlnet schedulers
-    logging.info(
-        "text2img schedulers: %s",
-        [Scheduler.__name__ for Scheduler in text2img.scheduler.compatibles],
-    )
-    logging.info(
-        "controlnet schedulers: %s",
-        [Scheduler.__name__ for Scheduler in controlnet.scheduler.compatibles],
-    )
+    # # Print the difference between the text2img schedulers and the controlnet schedulers
+    # logging.info(
+    #     "text2img schedulers: %s",
+    #     [Scheduler.__name__ for Scheduler in text2img.scheduler.compatibles],
+    # )
+    # logging.info(
+    # "controlnet schedulers: %s",
+    #     [Scheduler.__name__ for Scheduler in controlnet.scheduler.compatibles],
+    # )
 
     for Scheduler in text2img.scheduler.compatibles:
         models[model_name]["schedulers"][Scheduler.__name__] = Scheduler.from_config(
