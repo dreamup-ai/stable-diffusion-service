@@ -67,6 +67,9 @@ def generate_image(job):
 
         params["prompt_embeds"] = prompt_embeds
         params["negative_prompt_embeds"] = negative_prompt_embeds
+        del params["prompt"]
+        if "negative_prompt" in params:
+            del params["negative_prompt"]
     except Exception as e:
         logging.error("Error parsing prompt: %s; Using without weights", e)
 

@@ -107,6 +107,8 @@ for model_name in configured_models:
             "negative_prompt_embeds",
             "eta",
             "generator",
+            "prompt",
+            "negative_prompt",
         ]
     )
 
@@ -122,6 +124,8 @@ for model_name in configured_models:
             "strength",
             "image",
             "generator",
+            "prompt",
+            "negative_prompt",
         ]
     )
 
@@ -140,6 +144,8 @@ for model_name in configured_models:
             "height",
             "width",
             "generator",
+            "prompt",
+            "negative_prompt",
         ]
     )
 
@@ -159,6 +165,8 @@ for model_name in configured_models:
             "controlnet_conditioning_scale",
             "height",
             "width",
+            "prompt",
+            "negative_prompt",
         ]
     )
 
