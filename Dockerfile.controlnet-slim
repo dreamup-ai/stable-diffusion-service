@@ -3,48 +3,50 @@ FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:safety-checker
 # Get just the controlnet models we want to launch with
 # Canny
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_canny \
-  /models/lllyasviel/control_v11p_sd15_canny
+  ${MODEL_DIR}/lllyasviel/control_v11p_sd15_canny
 RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_canny/resolve/main/diffusion_pytorch_model.safetensors \
-  -O /models/lllyasviel/control_v11p_sd15_canny/diffusion_pytorch_model.safetensors
+  -O ${MODEL_DIR}/lllyasviel/control_v11p_sd15_canny/diffusion_pytorch_model.safetensors
 
 # Depth
 RUN git clone https://huggingface.co/lllyasviel/control_v11f1p_sd15_depth \
-  /models/lllyasviel/control_v11f1p_sd15_depth
+  ${MODEL_DIR}/lllyasviel/control_v11f1p_sd15_depth
 RUN wget https://huggingface.co/lllyasviel/control_v11f1p_sd15_depth/resolve/main/diffusion_pytorch_model.safetensors \
-  -O /models/lllyasviel/control_v11f1p_sd15_depth/diffusion_pytorch_model.safetensors
+  -O ${MODEL_DIR}/lllyasviel/control_v11f1p_sd15_depth/diffusion_pytorch_model.safetensors
 
 # Normalbae
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_normalbae \
-  /models/lllyasviel/control_v11p_sd15_normalbae
+  ${MODEL_DIR}/lllyasviel/control_v11p_sd15_normalbae
 RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_normalbae/resolve/main/diffusion_pytorch_model.safetensors \
-  -O /models/lllyasviel/control_v11p_sd15_normalbae/diffusion_pytorch_model.safetensors
+  -O ${MODEL_DIR}/lllyasviel/control_v11p_sd15_normalbae/diffusion_pytorch_model.safetensors
 
 # Openpose
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_openpose \
-  /models/lllyasviel/control_v11p_sd15_openpose
+  ${MODEL_DIR}/lllyasviel/control_v11p_sd15_openpose
 RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_openpose/resolve/main/diffusion_pytorch_model.safetensors \
-  -O /models/lllyasviel/control_v11p_sd15_openpose/diffusion_pytorch_model.safetensors
+  -O ${MODEL_DIR}/lllyasviel/control_v11p_sd15_openpose/diffusion_pytorch_model.safetensors
 
 # Scribble
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_scribble \
-  /models/lllyasviel/control_v11p_sd15_scribble
+  ${MODEL_DIR}/lllyasviel/control_v11p_sd15_scribble
 RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_scribble/resolve/main/diffusion_pytorch_model.safetensors \
-  -O /models/lllyasviel/control_v11p_sd15_scribble/diffusion_pytorch_model.safetensors
+  -O ${MODEL_DIR}/lllyasviel/control_v11p_sd15_scribble/diffusion_pytorch_model.safetensors
 
 # Softedge
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_softedge \
-  /models/lllyasviel/control_v11p_sd15_softedge
+  ${MODEL_DIR}/lllyasviel/control_v11p_sd15_softedge
 RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_softedge/resolve/main/diffusion_pytorch_model.safetensors \
-  -O /models/lllyasviel/control_v11p_sd15_softedge/diffusion_pytorch_model.safetensors
+  -O ${MODEL_DIR}/lllyasviel/control_v11p_sd15_softedge/diffusion_pytorch_model.safetensors
 
 # Lineart
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_lineart \
-  /models/lllyasviel/control_v11p_sd15_lineart
+  ${MODEL_DIR}/lllyasviel/control_v11p_sd15_lineart
 RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_lineart/resolve/main/diffusion_pytorch_model.safetensors \
-  -O /models/lllyasviel/control_v11p_sd15_lineart/diffusion_pytorch_model.safetensors
+  -O ${MODEL_DIR}/lllyasviel/control_v11p_sd15_lineart/diffusion_pytorch_model.safetensors
 
 # Lineart Anime
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15s2_lineart_anime \
-  /models/lllyasviel/control_v11p_sd15s2_lineart_anime
+  ${MODEL_DIR}/lllyasviel/control_v11p_sd15s2_lineart_anime
 RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15s2_lineart_anime/resolve/main/diffusion_pytorch_model.safetensors \
-  -O /models/lllyasviel/control_v11p_sd15s2_lineart_anime/diffusion_pytorch_model.safetensors
+  -O ${MODEL_DIR}/lllyasviel/control_v11p_sd15s2_lineart_anime/diffusion_pytorch_model.safetensors
+
+ENV CONTROLNET_MODELS=canny,depth,normal,openpose,scribble,softedge,lineart,lineart_anime

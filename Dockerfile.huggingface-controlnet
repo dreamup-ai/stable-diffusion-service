@@ -20,3 +20,5 @@ RUN wget https://huggingface.co/${HF_REPO}/resolve/main/unet/diffusion_pytorch_m
   -O /models/${HF_REPO}/unet/diffusion_pytorch_model.${MODEL_FMT}
 RUN wget https://huggingface.co/${HF_REPO}/resolve/main/vae/diffusion_pytorch_model.${MODEL_FMT} \
   -O /models/${HF_REPO}/vae/diffusion_pytorch_model.${MODEL_FMT}
+
+ENV MODELS=${HF_REPO}
