@@ -160,8 +160,16 @@ def generate_image(job):
     scheduler_name = pipe.scheduler.__class__.__name__
     logging.info(f"Using scheduler {scheduler_name} for job {job['id']}")
     try:
+        to_cuda_start = time.perf_counter()
+        logging.info("Moving model to cuda")
         pipe.to("cuda")
+        to_cuda_stop = time.perf_counter()
+        logging.info(f"Moved model to cuda in {to_cuda_stop - to_cuda_start} seconds")
+        gen_start = time.perf_counter()
+        logging.info("Generating image")
         output = pipe(**clean(params))
+        gen_stop = time.perf_counter()
+        logging.info(f"Generated image in {gen_stop - gen_start} seconds")
         img = output.images[0]
         if not model_id.startswith("sdxl"):
             if output.nsfw_content_detected is not None and not isinstance(
@@ -183,5 +191,5 @@ def generate_image(job):
         logging.info("Potential NSFW content detected, via TypeError")
 
     stop = time.perf_counter()
-    logging.info(f"Generated image in {stop - start} seconds")
+    logging.info(f"Total Pipeline Time: {stop - start} seconds")
     return img, seed, nsfw, stop - start, scheduler_name

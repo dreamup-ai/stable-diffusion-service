@@ -9,6 +9,7 @@ from waitress import serve
 from stable_diffusion_models import models, xl_models
 from stable_diffusion import generate_image
 import base64
+import copy
 
 from __version__ import VERSION
 
@@ -93,7 +94,7 @@ def image():
             elif img is None:
                 img = Image.new("RGB", (1, 1))
         else:
-            base_job = job.copy()
+            base_job = copy.deepcopy(job)
             base_job["model"] = "sdxl_base"
             if "base_steps" in base_job["params"] and "refiner_steps" in base_job["params"]:
                 total_steps = base_job["params"]["base_steps"] + base_job["params"]["refiner_steps"]
@@ -107,7 +108,7 @@ def image():
             elif img is None:
                 img = Image.new("RGB", (1, 1))
             else:
-                refiner_job = job.copy()
+                refiner_job = copy.deepcopy(job)
                 refiner_job["model"] = "sdxl_refiner"
                 refiner_job["pipeline"] = "img2img"
                 refiner_job["params"]["image"] = img

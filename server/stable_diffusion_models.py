@@ -238,6 +238,7 @@ if xl_base and xl_base.endswith(".safetensors"):
         low_cpu_mem_usage=True,
     )
     sdxl_base.to("cuda")
+    # sdxl_base.unet = torch.compile(sdxl_base.unet)
     sdxl_base_sanitizer = make_sanitize_fn(
         [
             "prompt_embeds",
@@ -314,6 +315,7 @@ if xl_refiner and xl_refiner.endswith(".safetensors"):
         low_cpu_mem_usage=True,
     )
     sdxl_refiner_img2img.to("cuda")
+    # sdxl_refiner_img2img.unet = torch.compile(sdxl_refiner_img2img.unet)
     sdxl_refiner_img2img_sanitizer = make_sanitize_fn(
         [
             "prompt_embeds",
