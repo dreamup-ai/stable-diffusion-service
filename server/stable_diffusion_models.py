@@ -8,12 +8,15 @@ from diffusers import (
     StableDiffusionInpaintPipeline,
     StableDiffusionControlNetPipeline,
     ControlNetModel,
+    StableDiffusionXLPipeline,
+    StableDiffusionXLImg2ImgPipeline,
+    StableDiffusionXLInpaintPipeline,
 )
 from diffusers.pipelines.stable_diffusion import StableDiffusionSafetyChecker
 import torch
 
 # from dynamodb_json import json_util as json
-from compel import Compel
+from compel import Compel, ReturnedEmbeddingsType
 
 # from dynamo import dynamo
 model_dir = os.environ.get("MODEL_DIR", "/models")
@@ -24,17 +27,22 @@ feature_extractor_path = os.path.join(model_dir, feature_extractor_model)
 
 logging.getLogger().setLevel(logging.INFO)
 
-logging.info("Loading safety checker...")
-start = time.perf_counter()
-safety_checker = StableDiffusionSafetyChecker.from_pretrained(
-    safety_checker_path, torch_dtype=torch.float16
-)
-safety_checker.to("cuda")
-feature_extractor = CLIPImageProcessor.from_pretrained(
-    feature_extractor_path, torch_dtype=torch.float16
-)
-stop = time.perf_counter()
-logging.info("Loaded safety checker in %s seconds", stop - start)
+load_safety_checker = os.getenv("LOAD_SAFETY_CHECKER", "true").lower() == "true"
+if load_safety_checker:
+    logging.info("Loading safety checker...")
+    start = time.perf_counter()
+    safety_checker = StableDiffusionSafetyChecker.from_pretrained(
+        safety_checker_path, torch_dtype=torch.float16
+    )
+    safety_checker.to("cuda")
+    feature_extractor = CLIPImageProcessor.from_pretrained(
+        feature_extractor_path, torch_dtype=torch.float16
+    )
+    stop = time.perf_counter()
+    logging.info("Loaded safety checker in %s seconds", stop - start)
+else:
+    safety_checker = None
+    feature_extractor = None
 
 control_net_models = {}
 control_net_model_types = {
@@ -51,22 +59,23 @@ control_net_model_types = {
     "lineart_anime": "lllyasviel/control_v11p_sd15s2_lineart_anime",
 }
 
-configured_controlnet_models = os.getenv("CONTROLNET_MODELS", "").split(",")
-if len(configured_controlnet_models) == 0:
-    configured_controlnet_models = list(control_net_model_types.keys())
+configured_controlnet_models = [a for a in os.getenv("CONTROLNET_MODELS", "").split(",") if a != ""]
+# if len(configured_controlnet_models) == 0:
+    # configured_controlnet_models = list(control_net_model_types.keys())
 
-start = time.perf_counter()
-for model_type in configured_controlnet_models:
-    logging.info(f"Loading control net model {model_type}...")
-    model = ControlNetModel.from_pretrained(
-        os.path.join(model_dir, control_net_model_types[model_type]),
-        torch_dtype=torch.float16,
-        use_safetensors=True,
-    )
-    control_net_models[model_type] = model
-    logging.info(f"Loaded control net model {model_type}")
-stop = time.perf_counter()
-logging.info("Loaded control net models in %s seconds", stop - start)
+if len(configured_controlnet_models) > 0:
+    start = time.perf_counter()
+    for model_type in configured_controlnet_models:
+        logging.info(f"Loading control net model {model_type}...")
+        model = ControlNetModel.from_pretrained(
+            os.path.join(model_dir, control_net_model_types[model_type]),
+            torch_dtype=torch.float16,
+            use_safetensors=True,
+        )
+        control_net_models[model_type] = model
+        logging.info(f"Loaded control net model {model_type}")
+    stop = time.perf_counter()
+    logging.info("Loaded control net models in %s seconds", stop - start)
 
 
 # function factory to create sanitizer functions
@@ -78,10 +87,12 @@ def make_sanitize_fn(allowed_keys):
 
 
 models = {}
+xl_models = {}
 
-
-configured_models = os.getenv("MODELS", "").split(",")
-if len(configured_models) == 0:
+configured_models = [a for a in os.getenv("MODELS", "").split(",") if a != ""]
+xl_base = os.getenv("MODEL_XL_BASE", "")
+xl_refiner = os.getenv("MODEL_XL_REFINER", "")
+if len(configured_models) == 0 and xl_base == "" and xl_refiner == "":
     logging.error("No models configured!")
     exit(1)
 
@@ -89,6 +100,11 @@ for model_name in configured_models:
     logging.info(f"Loading pipelines for model {model_name}...")
     start = time.perf_counter()
     model_path = os.path.join(model_dir, model_name)
+    models[model_name] = {
+        "default_scheduler": "DPMSolverMultistepScheduler",
+        "default_num_iterations": 25,
+        "pipelines": {}
+    }
 
     text2img = StableDiffusionPipeline.from_pretrained(
         model_path,
@@ -111,6 +127,7 @@ for model_name in configured_models:
             "negative_prompt",
         ]
     )
+    models[model_name]["pipelines"]["text2img"] = {"pipeline": text2img, "sanitize": text2imgSanitizer}
 
     img2img = StableDiffusionImg2ImgPipeline(**text2img.components)
     img2img.to("cuda")
@@ -128,6 +145,7 @@ for model_name in configured_models:
             "negative_prompt",
         ]
     )
+    models[model_name]["pipelines"]["img2img"] = {"pipeline": img2img, "sanitize": img2imgSanitizer}
 
     inpaint = StableDiffusionInpaintPipeline(**text2img.components)
     inpaint.to("cuda")
@@ -148,42 +166,33 @@ for model_name in configured_models:
             "negative_prompt",
         ]
     )
+    models[model_name]["pipelines"]["inpaint"] = {"pipeline": inpaint, "sanitize": inpaintSanitizer}
 
-    controlnet = StableDiffusionControlNetPipeline(
-        **text2img.components, controlnet=control_net_models["depth"]
-    )
-    controlnet.to("cuda")
-    controlnet_sanitizer = make_sanitize_fn(
-        [
-            "prompt_embeds",
-            "num_inference_steps",
-            "guidance_scale",
-            "negative_prompt_embeds",
-            "eta",
-            "image",
-            "generator",
-            "controlnet_conditioning_scale",
-            "height",
-            "width",
-            "prompt",
-            "negative_prompt",
-        ]
-    )
-
-    models[model_name] = {
-        "default_scheduler": "DPMSolverMultistepScheduler",
-        "default_num_iterations": 25,
-    }
-
-    models[model_name]["pipelines"] = {
-        "text2img": {
-            "pipeline": text2img,
-            "sanitize": text2imgSanitizer,
-        },
-        "img2img": {"pipeline": img2img, "sanitize": img2imgSanitizer},
-        "inpaint": {"pipeline": inpaint, "sanitize": inpaintSanitizer},
-        "controlnet": {"pipeline": controlnet, "sanitize": controlnet_sanitizer},
-    }
+    if len(configured_controlnet_models) > 0:
+        controlnet = StableDiffusionControlNetPipeline(
+            **text2img.components, controlnet=control_net_models["depth"]
+        )
+        controlnet.to("cuda")
+        controlnet_sanitizer = make_sanitize_fn(
+            [
+                "prompt_embeds",
+                "num_inference_steps",
+                "guidance_scale",
+                "negative_prompt_embeds",
+                "eta",
+                "image",
+                "generator",
+                "controlnet_conditioning_scale",
+                "height",
+                "width",
+                "prompt",
+                "negative_prompt",
+            ]
+        )
+        models[model_name]["pipelines"]["controlnet"] = {
+            "pipeline": controlnet,
+            "sanitize": controlnet_sanitizer,
+        }
 
     models[model_name]["compel"] = Compel(
         tokenizer=text2img.tokenizer,
@@ -211,3 +220,127 @@ for model_name in configured_models:
         model_name,
         time.perf_counter() - start,
     )
+
+if xl_base and xl_base.endswith(".safetensors"):
+    logging.info(f"Loading pipelines for model {xl_base}...")
+    start = time.perf_counter()
+    model_path = os.path.join(model_dir, xl_base)
+    xl_models["base"] = {
+        "default_scheduler": "DPMSolverMultistepScheduler",
+        "default_num_iterations": 25,
+        "pipelines": {}
+    }
+    sdxl_base = StableDiffusionXLPipeline.from_single_file(
+        model_path,
+        torch_dtype=torch.float16,
+        variant="fp16",
+        use_safetensors=True,
+    )
+    sdxl_base.to("cuda")
+    sdxl_base_sanitizer = make_sanitize_fn(
+        [
+            "prompt_embeds",
+            "width",
+            "height",
+            "num_inference_steps",
+            "guidance_scale",
+            "negative_prompt_embeds",
+            "eta",
+            "generator",
+            "prompt",
+            "negative_prompt",
+            "pooled_prompt_embeds",
+            "negative_pooled_prompt_embeds",
+        ]
+    )
+    xl_models["base"]["pipelines"]["text2img"] = {"pipeline": sdxl_base, "sanitize": sdxl_base_sanitizer}
+
+    sdxl_base_img2img = StableDiffusionXLImg2ImgPipeline(**sdxl_base.components)
+    sdxl_base_img2img.to("cuda")
+    sdxl_base_img2img_sanitizer = make_sanitize_fn(
+        [
+            "prompt_embeds",
+            "num_inference_steps",
+            "guidance_scale",
+            "negative_prompt_embeds",
+            "eta",
+            "strength",
+            "image",
+            "generator",
+            "prompt",
+            "negative_prompt",
+            "pooled_prompt_embeds",
+            "negative_pooled_prompt_embeds",
+        ]
+    )
+    xl_models["base"]["pipelines"]["img2img"] = {"pipeline": sdxl_base_img2img, "sanitize": sdxl_base_img2img_sanitizer}
+
+    xl_models["base"]["compel"] = Compel(
+        tokenizer=[sdxl_base.tokenizer, sdxl_base.tokenizer_2],
+        text_encoder=[sdxl_base.text_encoder, sdxl_base.text_encoder_2],
+        truncate_long_prompts=False,
+        returned_embeddings_type=ReturnedEmbeddingsType.PENULTIMATE_HIDDEN_STATES_NON_NORMALIZED,
+        requires_pooled=[False, True]
+    )
+
+    xl_models["base"]["schedulers"] = {}
+    for Scheduler in sdxl_base.scheduler.compatibles:
+        xl_models["base"]["schedulers"][Scheduler.__name__] = Scheduler.from_config(
+            sdxl_base.scheduler.config
+        )
+
+
+    stop = time.perf_counter()
+    logging.info("Loaded pipelines for model %s in %s seconds", xl_base, stop - start)
+
+if xl_refiner and xl_refiner.endswith(".safetensors"):
+    logging.info(f"Loading pipelines for model {xl_refiner}...")
+    start = time.perf_counter()
+    model_path = os.path.join(model_dir, xl_refiner)
+    xl_models["refiner"] = {
+        "default_scheduler": "DPMSolverMultistepScheduler",
+        "default_num_iterations": 25,
+        "pipelines": {}
+    }
+    
+    sdxl_refiner_img2img = StableDiffusionXLImg2ImgPipeline.from_single_file(
+        model_path,
+        torch_dtype=torch.float16,
+        variant="fp16",
+        use_safetensors=True,
+    )
+    sdxl_refiner_img2img.to("cuda")
+    sdxl_refiner_img2img_sanitizer = make_sanitize_fn(
+        [
+            "prompt_embeds",
+            "num_inference_steps",
+            "guidance_scale",
+            "negative_prompt_embeds",
+            "eta",
+            "strength",
+            "image",
+            "generator",
+            "prompt",
+            "negative_prompt",
+            "pooled_prompt_embeds",
+            "negative_pooled_prompt_embeds",
+        ]
+    )
+    xl_models["refiner"]["pipelines"]["img2img"] = {"pipeline": sdxl_refiner_img2img, "sanitize": sdxl_refiner_img2img_sanitizer}
+
+    xl_models["refiner"]["compel"] = Compel(
+        tokenizer=[sdxl_refiner_img2img.tokenizer, sdxl_refiner_img2img.tokenizer_2],
+        text_encoder=[sdxl_refiner_img2img.text_encoder, sdxl_refiner_img2img.text_encoder_2],
+        truncate_long_prompts=False,
+        returned_embeddings_type=ReturnedEmbeddingsType.PENULTIMATE_HIDDEN_STATES_NON_NORMALIZED,
+        requires_pooled=[False, True]
+    )
+
+    xl_models["refiner"]["schedulers"] = {}
+    for Scheduler in sdxl_refiner_img2img.scheduler.compatibles:
+        xl_models["refiner"]["schedulers"][Scheduler.__name__] = Scheduler.from_config(
+            sdxl_refiner_img2img.scheduler.config
+        )
+
+    stop = time.perf_counter()
+    logging.info("Loaded pipelines for model %s in %s seconds", xl_base, stop - start)

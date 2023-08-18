@@ -1,0 +1,18 @@
+FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:base
+
+RUN apt-get install wget
+
+ARG BASE_MODEL_ID="stabilityai/stable-diffusion-xl-base-1.0"
+ARG REFINER_ID="stabilityai/stable-diffusion-xl-refiner-1.0"
+
+ENV MODEL_DIR=/models
+
+RUN wget https://huggingface.co/${BASE_MODEL_ID}/resolve/main/sd_xl_base_1.0.safetensors \
+  -O ${MODEL_DIR}/sd_xl_base_1.0.safetensors
+ENV MODEL_XL_BASE=${BASE_MODEL_ID}
+
+RUN wget https://huggingface.co/${REFINER_ID}/resolve/main/sd_xl_refiner_1.0.safetensors \
+  -O ${MODEL_DIR}/sd_xl_refiner_1.0.safetensors
+
+ENV MODEL_XL_REFINER=${REFINER_ID}
+ENV LOAD_SAFETY_CHECKER=false

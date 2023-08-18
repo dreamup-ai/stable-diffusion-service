@@ -104,8 +104,12 @@ def rewrite_prompt_for_compel(prompt):
     return prompt
 
 
-def get_prompt_embeds(compel, prompt):
+def get_prompt_embeds(compel, prompt, pooled=False):
     prompt = rewrite_prompt_for_compel(prompt)
     with torch.no_grad():
-        conditioning = compel.build_conditioning_tensor(prompt)
-    return conditioning
+        if pooled:
+            conditioning, pooled = compel(prompt)
+            return conditioning, pooled
+        else:
+            conditioning = compel(prompt)
+            return conditioning

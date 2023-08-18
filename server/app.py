@@ -6,7 +6,7 @@ import os
 import logging
 import time
 from waitress import serve
-from stable_diffusion_models import models
+from stable_diffusion_models import models, xl_models
 from stable_diffusion import generate_image
 import base64
 
@@ -52,11 +52,15 @@ def image():
         log.error("No params specified")
         return make_response(jsonify({"error": "No params specified"}), 400)
 
-    if job["model"] not in models:
+
+    if job["model"] not in models and job["model"] != "sdxl":
         log.error("Model not found")
         return make_response(jsonify({"error": "Model not found"}), 400)
 
-    model = models[job["model"]]
+    if job["model"] != "sdxl":
+        model = models[job["model"]]
+    else:
+        model = xl_models["base"]
 
     if job["pipeline"] not in model["pipelines"]:
         log.error("Pipeline not found")
@@ -79,12 +83,36 @@ def image():
             log.error("Error decoding mask image: %s", e)
             return make_response(jsonify({"error": "Error decoding mask image"}), 400)
         job["params"]["mask_image"] = mask_image
+        
+    
     try:
-        img, seed, nsfw, gpu_duration, scheduler_name = generate_image(job)
-        if img is None and nsfw is None:
-            return make_response(jsonify({"error": "Error generating image"}), 400)
-        elif img is None:
-            img = Image.new("RGB", (1, 1))
+        if job["model"] != "sdxl":
+            img, seed, nsfw, gpu_duration, scheduler_name = generate_image(job)
+            if img is None and nsfw is None:
+                return make_response(jsonify({"error": "Error generating image"}), 400)
+            elif img is None:
+                img = Image.new("RGB", (1, 1))
+        else:
+            base_job = job.copy()
+            base_job["model"] = "sdxl_base"
+            if "base_steps" in base_job["params"]:
+                base_job["params"]["num_inference_steps"] = base_job["params"]["base_steps"]
+            img, seed, nsfw, gpu_duration, scheduler_name = generate_image(base_job)
+            if img is None and nsfw is None:
+                return make_response(jsonify({"error": "Error generating image"}), 400)
+            elif img is None:
+                img = Image.new("RGB", (1, 1))
+            else:
+                refiner_job = job.copy()
+                refiner_job["model"] = "sdxl_refiner"
+                refiner_job["params"]["image"] = img
+                if "refiner_steps" in refiner_job["params"]:
+                    refiner_job["params"]["num_inference_steps"] = refiner_job["params"]["refiner_steps"]
+                img, seed, nsfw, gpu_duration, scheduler_name = generate_image(refiner_job)
+                if img is None and nsfw is None:
+                    return make_response(jsonify({"error": "Error generating image"}), 400)
+                elif img is None:
+                    img = Image.new("RGB", (1, 1))
 
         img_io = BytesIO()
         img.save(img_io, "PNG")

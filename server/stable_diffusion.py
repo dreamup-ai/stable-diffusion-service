@@ -4,6 +4,7 @@ import torch
 import time
 from stable_diffusion_models import (
     models,
+    xl_models,
     safety_checker,
     feature_extractor,
     control_net_models,
@@ -36,10 +37,15 @@ def generate_image(job):
     model_id = job["model"]
     pipeline_id = job["pipeline"]
     params = job["params"]
-    if model_id not in models:
+    if model_id == "sdxl_base":
+        model = xl_models["base"]
+    elif model_id == "sdxl_refiner":
+        model = xl_models["refine"]
+    elif model_id not in models:
         logging.error(f"Model {model_id} not found")
         return None, None, None, None, None
-    model = models[model_id]
+    else:
+        model = models[model_id]
     if pipeline_id not in model["pipelines"]:
         logging.error(f"Pipeline {pipeline_id} not found for model {model_id}")
         return None, None, None, None, None
@@ -49,21 +55,49 @@ def generate_image(job):
     compel = model["compel"]
 
     try:
-        prompt_embeds = get_prompt_embeds(compel, params["prompt"])
+        if model_id.startswith("sdxl"):
+            prompt_embeds, pooled_prompt_embeds = get_prompt_embeds(compel, params["prompt"], pooled=True)
+        else:
+            prompt_embeds = get_prompt_embeds(compel, params["prompt"])
 
         if "negative_prompt" in params:
-            negative_prompt_embeds = get_prompt_embeds(
-                compel, params["negative_prompt"]
-            )
+            if model_id.startswith("sdxl"):
+                negative_prompt_embeds, negative_pooled_prompt_embeds = get_prompt_embeds(
+                    compel, params["negative_prompt"], pooled=True
+                )
+            else:
+                negative_prompt_embeds = get_prompt_embeds(
+                    compel, params["negative_prompt"]
+                )
+        elif model_id.startswith("sdxl"):
+            negative_prompt_embeds, negative_pooled_prompt_embeds = get_prompt_embeds(compel, "", pooled=True)
         else:
             negative_prompt_embeds = get_prompt_embeds(compel, "")
 
-        [
+        
+
+        if model_id.startswith("sdxl"):
+            [
+                prompt_embeds,
+                negative_prompt_embeds,
+                pooled_prompt_embeds, 
+                negative_pooled_prompt_embeds] = compel.pad_conditioning_tensors_to_same_length(
+                [
+                    prompt_embeds,
+                    negative_prompt_embeds,
+                    pooled_prompt_embeds, 
+                    negative_pooled_prompt_embeds
+                ]
+            )
+            params["pooled_prompt_embeds"] = pooled_prompt_embeds
+            params["negative_pooled_prompt_embeds"] = negative_pooled_prompt_embeds
+        else:
+            [
             prompt_embeds,
             negative_prompt_embeds,
-        ] = compel.pad_conditioning_tensors_to_same_length(
-            [prompt_embeds, negative_prompt_embeds]
-        )
+            ] = compel.pad_conditioning_tensors_to_same_length(
+                [prompt_embeds, negative_prompt_embeds]
+            )
 
         params["prompt_embeds"] = prompt_embeds
         params["negative_prompt_embeds"] = negative_prompt_embeds

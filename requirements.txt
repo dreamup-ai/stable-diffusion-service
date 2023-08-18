@@ -7,9 +7,9 @@ certifi==2023.5.7
 charset-normalizer==3.1.0
 click==8.1.3
 cmake==3.26.4
-compel==1.2.1
+compel==2.0.1
 Cython==0.29.35
-diffusers @ git+https://github.com/huggingface/diffusers.git@78922ed7c7e66c20aa95159c7b7a6057ba7d590d
+diffusers @ git+https://github.com/huggingface/diffusers.git@7b07f9812a58bfa96c06ed8ffe9e6b584286e2fd
 filelock==3.12.2
 Flask==2.3.2
 fsspec==2023.6.0
@@ -37,6 +37,7 @@ nvidia-cusolver-cu11==11.4.0.1
 nvidia-cusparse-cu11==11.7.4.91
 nvidia-nccl-cu11==2.14.3
 nvidia-nvtx-cu11==11.7.91
+omegaconf==2.3.0
 packaging==23.1
 Pillow==9.5.0
 psutil==5.9.5
@@ -57,7 +58,7 @@ torchsde==0.2.5
 torchvision==0.15.2
 tqdm==4.65.0
 trampoline==0.1.2
-transformers @ git+https://github.com/huggingface/transformers.git@abaca9f9432a84cfaa95531de4c72334f38a42f2
+transformers @ git+https://github.com/huggingface/transformers.git@d0c1aebea467af499331234e7b285a6bf91ea073
 triton==2.0.0
 typing_extensions==4.7.0
 urllib3==1.26.16

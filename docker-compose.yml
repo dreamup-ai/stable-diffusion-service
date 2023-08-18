@@ -1,26 +1,28 @@
 services:
   stable-diffusion-service:
-    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:0.1.4
+    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:0.2.0
     # runtime: nvidia
-    network_mode: host
-    build:
-      context: ./
-      dockerfile: Dockerfile.base
+    # network_mode: host
+    # build:
+    #   context: ./
+    #   dockerfile: Dockerfile.base
     ports:
       - "1111:1111"
     environment:
       - HOST=*
       - PORT=1111
       - MODEL_DIR=/models
-      - MODELS=Lykon/DreamShaper
-      - CONTROLNET_MODELS=canny,depth,normal,openpose,scribble,softedge,lineart,lineart_anime
+      - MODEL_XL_BASE=sd_xl_base_1.0.safetensors
+      - MODEL_XL_REFINER=sd_xl_refiner_1.0.safetensors
+      - LOAD_SAFETY_CHECKER=false
+      # - MODELS=SDXL
+      # - CONTROLNET_MODELS=canny,depth,normal,openpose,scribble,softedge,lineart,lineart_anime
     volumes:
-      - /models:/models
+      - ./models:/models
     deploy:
       resources:
         reservations:
           devices:
             - driver: nvidia
               count: 1
-              capabilities: [gpu]
-    
+              capabilities: [ gpu ]
