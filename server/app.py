@@ -95,8 +95,12 @@ def image():
         else:
             base_job = job.copy()
             base_job["model"] = "sdxl_base"
-            if "base_steps" in base_job["params"]:
-                base_job["params"]["num_inference_steps"] = base_job["params"]["base_steps"]
+            if "base_steps" in base_job["params"] and "refiner_steps" in base_job["params"]:
+                total_steps = base_job["params"]["base_steps"] + base_job["params"]["refiner_steps"]
+                high_noise_fraction = base_job["params"]["base_steps"] / total_steps
+                base_job["params"]["num_inference_steps"] = total_steps
+                base_job["params"]["denoising_end"] = high_noise_fraction
+                base_job["params"]["output_type"] = "latent"
             img, seed, nsfw, gpu_duration, scheduler_name = generate_image(base_job)
             if img is None and nsfw is None:
                 return make_response(jsonify({"error": "Error generating image"}), 400)
@@ -105,9 +109,11 @@ def image():
             else:
                 refiner_job = job.copy()
                 refiner_job["model"] = "sdxl_refiner"
+                refiner_job["pipeline"] = "img2img"
                 refiner_job["params"]["image"] = img
                 if "refiner_steps" in refiner_job["params"]:
-                    refiner_job["params"]["num_inference_steps"] = refiner_job["params"]["refiner_steps"]
+                    refiner_job["params"]["num_inference_steps"] = total_steps
+                    refiner_job["params"]["denoising_start"] = high_noise_fraction
                 img, seed, nsfw, gpu_duration, scheduler_name = generate_image(refiner_job)
                 if img is None and nsfw is None:
                     return make_response(jsonify({"error": "Error generating image"}), 400)

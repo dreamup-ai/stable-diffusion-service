@@ -40,7 +40,7 @@ def generate_image(job):
     if model_id == "sdxl_base":
         model = xl_models["base"]
     elif model_id == "sdxl_refiner":
-        model = xl_models["refine"]
+        model = xl_models["refiner"]
     elif model_id not in models:
         logging.error(f"Model {model_id} not found")
         return None, None, None, None, None
@@ -109,13 +109,16 @@ def generate_image(job):
     except Exception as e:
         logging.error("Error parsing prompt: %s; Using without weights", e)
 
-    if "image" in params:
-        params["image"] = resize_image(params["image"])
-        width, height = params["image"].size
-        params["width"] = width
-        params["height"] = height
-        logging.info("Dimensions: %s x %s", width, height)
-
+    if "image" in params and not model_id.startswith("sdxl"):
+        try:
+            params["image"] = resize_image(params["image"])
+            width, height = params["image"].size
+            params["width"] = width
+            params["height"] = height
+            logging.info("Dimensions: %s x %s", width, height)
+        except Exception as e:
+            logging.error("Error resizing image: %s", e)
+            
     if "mask_image" in params:
         params["mask_image"] = resize_image(params["mask_image"])
 
@@ -146,7 +149,7 @@ def generate_image(job):
     else:
         pipe.scheduler = model["schedulers"][model["default_scheduler"]]
 
-    if "safety_checker" in params and params["safety_checker"] is False:
+    if "safety_checker" in params and params["safety_checker"] is False or model_id.startswith("sdxl"):
         logging.info(f"Disabling safety checker for job {job['id']}")
         pipe.safety_checker = None, None, None, None, None
         pipe.feature_extractor = None, None, None, None, None
@@ -160,14 +163,17 @@ def generate_image(job):
         pipe.to("cuda")
         output = pipe(**clean(params))
         img = output.images[0]
-        if output.nsfw_content_detected is not None and not isinstance(
-            output.nsfw_content_detected, bool
-        ):
-            nsfw = output.nsfw_content_detected[0]
-        elif output.nsfw_content_detected is not None and isinstance(
-            output.nsfw_content_detected, bool
-        ):
-            nsfw = output.nsfw_content_detected
+        if not model_id.startswith("sdxl"):
+            if output.nsfw_content_detected is not None and not isinstance(
+                output.nsfw_content_detected, bool
+            ):
+                nsfw = output.nsfw_content_detected[0]
+            elif output.nsfw_content_detected is not None and isinstance(
+                output.nsfw_content_detected, bool
+            ):
+                nsfw = output.nsfw_content_detected
+            else:
+                nsfw = False
         else:
             nsfw = False
     except TypeError as e:

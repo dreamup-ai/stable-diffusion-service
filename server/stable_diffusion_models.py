@@ -235,6 +235,7 @@ if xl_base and xl_base.endswith(".safetensors"):
         torch_dtype=torch.float16,
         variant="fp16",
         use_safetensors=True,
+        low_cpu_mem_usage=True,
     )
     sdxl_base.to("cuda")
     sdxl_base_sanitizer = make_sanitize_fn(
@@ -251,6 +252,7 @@ if xl_base and xl_base.endswith(".safetensors"):
             "negative_prompt",
             "pooled_prompt_embeds",
             "negative_pooled_prompt_embeds",
+            "denoising_end"
         ]
     )
     xl_models["base"]["pipelines"]["text2img"] = {"pipeline": sdxl_base, "sanitize": sdxl_base_sanitizer}
@@ -271,6 +273,7 @@ if xl_base and xl_base.endswith(".safetensors"):
             "negative_prompt",
             "pooled_prompt_embeds",
             "negative_pooled_prompt_embeds",
+            "denoising_end"
         ]
     )
     xl_models["base"]["pipelines"]["img2img"] = {"pipeline": sdxl_base_img2img, "sanitize": sdxl_base_img2img_sanitizer}
@@ -308,6 +311,7 @@ if xl_refiner and xl_refiner.endswith(".safetensors"):
         torch_dtype=torch.float16,
         variant="fp16",
         use_safetensors=True,
+        low_cpu_mem_usage=True,
     )
     sdxl_refiner_img2img.to("cuda")
     sdxl_refiner_img2img_sanitizer = make_sanitize_fn(
@@ -324,6 +328,7 @@ if xl_refiner and xl_refiner.endswith(".safetensors"):
             "negative_prompt",
             "pooled_prompt_embeds",
             "negative_pooled_prompt_embeds",
+            "denoising_start"
         ]
     )
     xl_models["refiner"]["pipelines"]["img2img"] = {"pipeline": sdxl_refiner_img2img, "sanitize": sdxl_refiner_img2img_sanitizer}
