@@ -53,6 +53,6 @@ RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15s2_lineart_anime/res
 RUN git clone https://huggingface.co/DionTimmer/controlnet_qrcode \
   ${MODEL_DIR}/DionTimmer/controlnet_qrcode
 RUN wget https://huggingface.co/DionTimmer/controlnet_qrcode/resolve/main/diffusion_pytorch_model.fp16.safetensors \
-  -O ${MODEL_DIR}/DionTimmer/controlnet_qrcode/diffusion_pytorch_model.fp16.safetensors
+  -O ${MODEL_DIR}/DionTimmer/controlnet_qrcode/diffusion_pytorch_model.safetensors
 
 ENV CONTROLNET_MODELS=canny,depth,normal,openpose,scribble,softedge,lineart,lineart_anime,qr_code
