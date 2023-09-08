@@ -1,11 +1,11 @@
 services:
   stable-diffusion-service:
-    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:0.1.4
+    image: public.ecr.aws/i0t3i1w9/stable-diffusion-server:lykon-dreamshaper-controlnet-slim
     # runtime: nvidia
     network_mode: host
-    build:
-      context: ./
-      dockerfile: Dockerfile.base
+    # build:
+    #   context: ./
+    #   dockerfile: Dockerfile.base
     ports:
       - "1111:1111"
     environment:
@@ -13,9 +13,9 @@ services:
       - PORT=1111
       - MODEL_DIR=/models
       - MODELS=Lykon/DreamShaper
-      - CONTROLNET_MODELS=canny,depth,normal,openpose,scribble,softedge,lineart,lineart_anime
-    volumes:
-      - /models:/models
+      - CONTROLNET_MODELS=canny,depth,normal,openpose,scribble,softedge,lineart,lineart_anime,qr_code
+    # volumes:
+    #   - /models:/models
     deploy:
       resources:
         reservations:
