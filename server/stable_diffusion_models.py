@@ -49,6 +49,7 @@ control_net_model_types = {
     "seg": "lllyasviel/control_v11p_sd15_seg",
     "lineart": "lllyasviel/control_v11p_sd15_lineart",
     "lineart_anime": "lllyasviel/control_v11p_sd15s2_lineart_anime",
+    "qr_code": "DionTimmer/controlnet_qrcode",
 }
 
 configured_controlnet_models = os.getenv("CONTROLNET_MODELS", "").split(",")
