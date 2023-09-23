@@ -49,12 +49,16 @@ control_net_model_types = {
     "seg": "lllyasviel/control_v11p_sd15_seg",
     "lineart": "lllyasviel/control_v11p_sd15_lineart",
     "lineart_anime": "lllyasviel/control_v11p_sd15s2_lineart_anime",
+}
+
+controlnet_img2img_model_types = {
     "qr_code": "DionTimmer/controlnet_qrcode",
 }
 
 configured_controlnet_models = os.getenv("CONTROLNET_MODELS", "").split(",")
 if len(configured_controlnet_models) == 0:
     configured_controlnet_models = list(control_net_model_types.keys())
+logging.info(f"Configured control net models: {configured_controlnet_models}")
 
 start = time.perf_counter()
 for model_type in configured_controlnet_models:
