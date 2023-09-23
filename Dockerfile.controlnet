@@ -3,19 +3,19 @@ FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:controlnet-slim
 # MLSD
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_mlsd \
   /models/lllyasviel/control_v11p_sd15_mlsd
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_mlsd/resolve/main/diffusion_pytorch_model.safetensors \
+RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_mlsd/resolve/main/diffusion_pytorch_model.fp16.safetensors \
   -O /models/lllyasviel/control_v11p_sd15_mlsd/diffusion_pytorch_model.safetensors
 
 # Shuffle
 RUN git clone https://huggingface.co/lllyasviel/control_v11e_sd15_shuffle \
   /models/lllyasviel/control_v11e_sd15_shuffle
-RUN wget https://huggingface.co/lllyasviel/control_v11e_sd15_shuffle/resolve/main/diffusion_pytorch_model.safetensors \
+RUN wget https://huggingface.co/lllyasviel/control_v11e_sd15_shuffle/resolve/main/diffusion_pytorch_model.fp16.safetensors \
   -O /models/lllyasviel/control_v11e_sd15_shuffle/diffusion_pytorch_model.safetensors
 
 # Segmentation
 RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_seg \
   /models/lllyasviel/control_v11p_sd15_seg
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_seg/resolve/main/diffusion_pytorch_model.safetensors \
+RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_seg/resolve/main/diffusion_pytorch_model.fp16.safetensors \
   -O /models/lllyasviel/control_v11p_sd15_seg/diffusion_pytorch_model.safetensors
 
 ENV CONTROLNET_MODELS=${CONTROLNET_MODELS},mlsd,shuffle,seg
