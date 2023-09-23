@@ -11,7 +11,8 @@ from diffusers import (
     ControlNetModel,
 )
 from diffusers.pipelines.stable_diffusion import StableDiffusionSafetyChecker
-from optimum.bettertransformer import BetterTransformer
+
+# from optimum.bettertransformer import BetterTransformer
 import torch
 
 # from dynamodb_json import json_util as json
@@ -35,9 +36,9 @@ safety_checker.to("cuda")
 feature_extractor = CLIPImageProcessor.from_pretrained(
     feature_extractor_path, torch_dtype=torch.float16
 )
-feature_extractor = BetterTransformer.transform(
-    feature_extractor, keep_original_model=False
-)
+# feature_extractor = BetterTransformer.transform(
+#     feature_extractor, keep_original_model=False
+# )
 stop = time.perf_counter()
 logging.info("Loaded safety checker in %s seconds", stop - start)
 
@@ -75,6 +76,8 @@ for model_type in configured_controlnet_models:
             torch_dtype=torch.float16,
             use_safetensors=True,
         )
+        model.to("cuda", memory_format=torch.channels_last)
+        model = torch.compile(model, mode="reduce-overhead", fullgraph=True)
         controlnet_models[model_type] = model
         logging.info(f"Loaded controlnet model {model_type}")
     elif model_type in controlnet_img2img_model_types:
@@ -84,6 +87,8 @@ for model_type in configured_controlnet_models:
             torch_dtype=torch.float16,
             use_safetensors=True,
         )
+        model.to("cuda", memory_format=torch.channels_last)
+        model = torch.compile(model, mode="reduce-overhead", fullgraph=True)
         controlnet_img2img_models[model_type] = model
         logging.info(f"Loaded controlnet model {model_type}")
 

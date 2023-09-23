@@ -6,6 +6,7 @@ A server that runs stable diffusion tasks
 - [x] img2img
 - [x] controlnet
 - [x] inpainting
+- [x] controlnet_img2img
 
 ## Expected Directory Structure For Models
 
