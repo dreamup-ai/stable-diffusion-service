@@ -77,7 +77,6 @@ for model_type in configured_controlnet_models:
             use_safetensors=True,
         )
         model.to("cuda", memory_format=torch.channels_last)
-        model = torch.compile(model, mode="reduce-overhead", fullgraph=True)
         controlnet_models[model_type] = model
         logging.info(f"Loaded controlnet model {model_type}")
     elif model_type in controlnet_img2img_model_types:
@@ -88,7 +87,6 @@ for model_type in configured_controlnet_models:
             use_safetensors=True,
         )
         model.to("cuda", memory_format=torch.channels_last)
-        model = torch.compile(model, mode="reduce-overhead", fullgraph=True)
         controlnet_img2img_models[model_type] = model
         logging.info(f"Loaded controlnet model {model_type}")
 
