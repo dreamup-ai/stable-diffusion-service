@@ -18,4 +18,4 @@ RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_seg \
 RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_seg/resolve/main/diffusion_pytorch_model.fp16.safetensors \
   -O /models/lllyasviel/control_v11p_sd15_seg/diffusion_pytorch_model.safetensors
 
-ENV CONTROLNET_MODELS=${CONTROLNET_MODELS},mlsd,shuffle,seg
+ENV CONTROLNET_MODELS="${CONTROLNET_MODELS},mlsd,shuffle,seg"
