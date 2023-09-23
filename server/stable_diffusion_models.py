@@ -7,6 +7,7 @@ from diffusers import (
     StableDiffusionImg2ImgPipeline,
     StableDiffusionInpaintPipeline,
     StableDiffusionControlNetPipeline,
+    StableDiffusionControlNetImg2ImgPipeline,
     ControlNetModel,
 )
 from diffusers.pipelines.stable_diffusion import StableDiffusionSafetyChecker
@@ -36,8 +37,8 @@ feature_extractor = CLIPImageProcessor.from_pretrained(
 stop = time.perf_counter()
 logging.info("Loaded safety checker in %s seconds", stop - start)
 
-control_net_models = {}
-control_net_model_types = {
+controlnet_models = {}
+controlnet_model_types = {
     "canny": "lllyasviel/control_v11p_sd15_canny",
     "depth": "lllyasviel/control_v11f1p_sd15_depth",
     "mlsd": "lllyasviel/control_v11p_sd15_mlsd",
@@ -51,25 +52,37 @@ control_net_model_types = {
     "lineart_anime": "lllyasviel/control_v11p_sd15s2_lineart_anime",
 }
 
+controlnet_img2img_models = {}
 controlnet_img2img_model_types = {
     "qr_code": "DionTimmer/controlnet_qrcode",
 }
 
 configured_controlnet_models = os.getenv("CONTROLNET_MODELS", "").split(",")
 if len(configured_controlnet_models) == 0:
-    configured_controlnet_models = list(control_net_model_types.keys())
+    configured_controlnet_models = list(controlnet_model_types.keys())
 logging.info(f"Configured control net models: {configured_controlnet_models}")
 
 start = time.perf_counter()
 for model_type in configured_controlnet_models:
-    logging.info(f"Loading control net model {model_type}...")
-    model = ControlNetModel.from_pretrained(
-        os.path.join(model_dir, control_net_model_types[model_type]),
-        torch_dtype=torch.float16,
-        use_safetensors=True,
-    )
-    control_net_models[model_type] = model
-    logging.info(f"Loaded control net model {model_type}")
+    if model_type in controlnet_model_types:
+        logging.info(f"Loading control net model {model_type}...")
+        model = ControlNetModel.from_pretrained(
+            os.path.join(model_dir, controlnet_model_types[model_type]),
+            torch_dtype=torch.float16,
+            use_safetensors=True,
+        )
+        controlnet_models[model_type] = model
+        logging.info(f"Loaded control net model {model_type}")
+    elif model_type in controlnet_img2img_model_types:
+        logging.info(f"Loading control net model {model_type}...")
+        model = ControlNetModel.from_pretrained(
+            os.path.join(model_dir, controlnet_img2img_model_types[model_type]),
+            torch_dtype=torch.float16,
+            use_safetensors=True,
+        )
+        controlnet_img2img_models[model_type] = model
+        logging.info(f"Loaded control net model {model_type}")
+
 stop = time.perf_counter()
 logging.info("Loaded control net models in %s seconds", stop - start)
 
@@ -155,7 +168,7 @@ for model_name in configured_models:
     )
 
     controlnet = StableDiffusionControlNetPipeline(
-        **text2img.components, controlnet=control_net_models["depth"]
+        **text2img.components, controlnet=controlnet_models["depth"]
     )
     controlnet.to("cuda")
     controlnet_sanitizer = make_sanitize_fn(
@@ -175,6 +188,29 @@ for model_name in configured_models:
         ]
     )
 
+    controlnet_img2img = StableDiffusionControlNetImg2ImgPipeline(
+        **text2img.components, controlnet=controlnet_img2img_models["qr_code"]
+    )
+    controlnet_img2img.to("cuda")
+    controlnet_img2img_sanitizer = make_sanitize_fn(
+        [
+            "prompt_embeds",
+            "num_inference_steps",
+            "guidance_scale",
+            "negative_prompt_embeds",
+            "eta",
+            "image",
+            "generator",
+            "controlnet_conditioning_scale",
+            "height",
+            "width",
+            "prompt",
+            "negative_prompt",
+            "control_image",
+            "strength",
+        ]
+    )
+
     models[model_name] = {
         "default_scheduler": "DPMSolverMultistepScheduler",
         "default_num_iterations": 25,
@@ -188,6 +224,10 @@ for model_name in configured_models:
         "img2img": {"pipeline": img2img, "sanitize": img2imgSanitizer},
         "inpaint": {"pipeline": inpaint, "sanitize": inpaintSanitizer},
         "controlnet": {"pipeline": controlnet, "sanitize": controlnet_sanitizer},
+        "controlnet_img2img": {
+            "pipeline": controlnet_img2img,
+            "sanitize": controlnet_img2img_sanitizer,
+        },
     }
 
     models[model_name]["compel"] = Compel(

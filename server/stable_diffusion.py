@@ -6,7 +6,8 @@ from stable_diffusion_models import (
     models,
     safety_checker,
     feature_extractor,
-    control_net_models,
+    controlnet_models,
+    controlnet_img2img_models,
 )
 from PIL import Image
 from prompt_tools import get_prompt_embeds
@@ -85,15 +86,27 @@ def generate_image(job):
     if "mask_image" in params:
         params["mask_image"] = resize_image(params["mask_image"])
 
+    if "control_image" in params:
+        params["control_image"] = resize_image(params["control_image"])
+
     if pipeline_id == "controlnet":
         if "control_model" not in params:
             logging.error("Control model not specified")
             return None, None, None, None, None
         control_model = params["control_model"]
-        if control_model not in control_net_models:
+        if control_model not in controlnet_models:
             logging.error(f"Control model {control_model} not found")
             return None, None, None, None, None
-        pipe.controlnet = control_net_models[control_model]
+        pipe.controlnet = controlnet_models[control_model]
+    elif pipeline_id == "controlnet_img2img":
+        if "control_model" not in params:
+            logging.error("Control model not specified")
+            return None, None, None, None, None
+        control_model = params["control_model"]
+        if control_model not in controlnet_img2img_models:
+            logging.error(f"Control model {control_model} not found")
+            return None, None, None, None, None
+        pipe.controlnet = controlnet_img2img_models[control_model]
 
     if "seed" in params:
         seed = params["seed"]
