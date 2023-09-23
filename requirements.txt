@@ -11,3 +11,4 @@ Pillow
 waitress
 timm
 Flask
+xformers

@@ -115,6 +115,7 @@ for model_name in configured_models:
         feature_extractor=None,
     )
     text2img.to("cuda")
+    text2img.enable_xformers_memory_efficient_attention()
     text2imgSanitizer = make_sanitize_fn(
         [
             "prompt_embeds",
@@ -132,6 +133,7 @@ for model_name in configured_models:
 
     img2img = StableDiffusionImg2ImgPipeline(**text2img.components)
     img2img.to("cuda")
+    img2img.enable_xformers_memory_efficient_attention()
     img2imgSanitizer = make_sanitize_fn(
         [
             "prompt_embeds",
@@ -149,6 +151,7 @@ for model_name in configured_models:
 
     inpaint = StableDiffusionInpaintPipeline(**text2img.components)
     inpaint.to("cuda")
+    inpaint.enable_xformers_memory_efficient_attention()
     inpaintSanitizer = make_sanitize_fn(
         [
             "prompt_embeds",
@@ -171,6 +174,7 @@ for model_name in configured_models:
         **text2img.components, controlnet=controlnet_models["depth"]
     )
     controlnet.to("cuda")
+    controlnet.enable_xformers_memory_efficient_attention()
     controlnet_sanitizer = make_sanitize_fn(
         [
             "prompt_embeds",
@@ -192,6 +196,7 @@ for model_name in configured_models:
         **text2img.components, controlnet=controlnet_img2img_models["qr_code"]
     )
     controlnet_img2img.to("cuda")
+    controlnet_img2img.enable_xformers_memory_efficient_attention()
     controlnet_img2img_sanitizer = make_sanitize_fn(
         [
             "prompt_embeds",
