@@ -11,6 +11,7 @@ from diffusers import (
     ControlNetModel,
 )
 from diffusers.pipelines.stable_diffusion import StableDiffusionSafetyChecker
+from optimum.bettertransformer import BetterTransformer
 import torch
 
 # from dynamodb_json import json_util as json
@@ -33,6 +34,9 @@ safety_checker = StableDiffusionSafetyChecker.from_pretrained(
 safety_checker.to("cuda")
 feature_extractor = CLIPImageProcessor.from_pretrained(
     feature_extractor_path, torch_dtype=torch.float16
+)
+feature_extractor = BetterTransformer.transform(
+    feature_extractor, keep_original_model=False
 )
 stop = time.perf_counter()
 logging.info("Loaded safety checker in %s seconds", stop - start)
