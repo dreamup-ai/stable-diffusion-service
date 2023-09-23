@@ -108,11 +108,11 @@ This will build an image with the nitro-diffusion model and the controlnet-slim 
 
 The server is configured via environment variables. The following variables are available:
 
-| Variable            | Default      | Description                                                                                                                                                                                        |
-| ------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `MODELS`            | **REQUIRED** | A comma-separated list of stable diffusion models to load. Each model should be specified as `<author>/<name>`. For example: `nitrosocke/Nitro-Diffusion,lykon/DreamShaper`                        |
-| `HOST`              | `localhost`  | The host to bind to                                                                                                                                                                                |
-| `PORT`              | `1111`       | The port to bind to                                                                                                                                                                                |
-| `MODEL_DIR`         | `/models`    | The directory where models are stored                                                                                                                                                              |
+| Variable            | Default      | Description                                                                                                                                                                                                |
+| ------------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MODELS`            | **REQUIRED** | A comma-separated list of stable diffusion models to load. Each model should be specified as `<author>/<name>`. For example: `nitrosocke/Nitro-Diffusion,lykon/DreamShaper`                                |
+| `HOST`              | `localhost`  | The host to bind to                                                                                                                                                                                        |
+| `PORT`              | `1111`       | The port to bind to                                                                                                                                                                                        |
+| `MODEL_DIR`         | `/models`    | The directory where models are stored                                                                                                                                                                      |
 |                     |
-| `CONTROLNET_MODELS` | *all*        | A comma-separated list of controlnet model ids to load. Options are: `canny,depth,hed,mlsd,normal,openpose,scribble,seg,shuffle`. For example: `canny,depth,hed,normal,openpose,scribble,softedge` |
+| `CONTROLNET_MODELS` | *all*        | A comma-separated list of controlnet model ids to load. Options are: `canny,depth,hed,mlsd,normal,openpose,scribble,seg,shuffle,qr_code`. For example: `canny,depth,hed,normal,openpose,scribble,softedge` |
