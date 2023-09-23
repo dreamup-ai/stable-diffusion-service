@@ -65,26 +65,26 @@ logging.info(f"Configured control net models: {configured_controlnet_models}")
 start = time.perf_counter()
 for model_type in configured_controlnet_models:
     if model_type in controlnet_model_types:
-        logging.info(f"Loading control net model {model_type}...")
+        logging.info(f"Loading controlnet model {model_type}...")
         model = ControlNetModel.from_pretrained(
             os.path.join(model_dir, controlnet_model_types[model_type]),
             torch_dtype=torch.float16,
             use_safetensors=True,
         )
         controlnet_models[model_type] = model
-        logging.info(f"Loaded control net model {model_type}")
+        logging.info(f"Loaded controlnet model {model_type}")
     elif model_type in controlnet_img2img_model_types:
-        logging.info(f"Loading control net model {model_type}...")
+        logging.info(f"Loading controlnet img2img model {model_type}...")
         model = ControlNetModel.from_pretrained(
             os.path.join(model_dir, controlnet_img2img_model_types[model_type]),
             torch_dtype=torch.float16,
             use_safetensors=True,
         )
         controlnet_img2img_models[model_type] = model
-        logging.info(f"Loaded control net model {model_type}")
+        logging.info(f"Loaded controlnet model {model_type}")
 
 stop = time.perf_counter()
-logging.info("Loaded control net models in %s seconds", stop - start)
+logging.info("Loaded controlnet models in %s seconds", stop - start)
 
 
 # function factory to create sanitizer functions
