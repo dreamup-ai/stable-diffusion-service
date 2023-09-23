@@ -52,7 +52,7 @@ controlnet_model_types = {
     "lineart_anime": "lllyasviel/control_v11p_sd15s2_lineart_anime",
 }
 
-controlnet_img2img_models = {}
+controlnet_img2img_models = {**controlnet_models}
 controlnet_img2img_model_types = {
     "qr_code": "DionTimmer/controlnet_qrcode",
 }
