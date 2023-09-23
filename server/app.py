@@ -79,6 +79,7 @@ def image():
             log.error("Error decoding mask image: %s", e)
             return make_response(jsonify({"error": "Error decoding mask image"}), 400)
         job["params"]["mask_image"] = mask_image
+
     if "control_image" in job["params"]:
         try:
             control_image = Image.open(
@@ -90,6 +91,11 @@ def image():
                 jsonify({"error": "Error decoding control image"}), 400
             )
         job["params"]["control_image"] = control_image
+
+    if "controlnet_conditioning_scale" in job["params"]:
+        job["params"]["controlnet_conditioning_scale"] = float(
+            job["params"]["controlnet_conditioning_scale"]
+        )
     try:
         img, seed, nsfw, gpu_duration, scheduler_name = generate_image(job)
         if img is None and nsfw is None:
