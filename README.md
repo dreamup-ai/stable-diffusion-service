@@ -102,7 +102,7 @@ The syntax is:
 ./scripts/build-huggingface-controlnet-image nitrosocke/Nitro-Diffusion slim safetensors
 ```
 
-This will build an image with the nitro-diffusion model and the controlnet-slim models. It will also include the safety checker models. The image will be tagged with the name `nitrosocke-nitro-diffusion-controlnet-slim`, as well as the version of the server that was used to build it (e.g. `0.1.4-nitrosocke-nitro-diffusion-controlnet-slim`).
+This will build an image with the nitro-diffusion model and the controlnet-slim models. It will also include the safety checker models. The image will be tagged with the name `nitrosocke-nitro-diffusion-controlnet-slim`, as well as the version of the server that was used to build it (e.g. `0.2.0-nitrosocke-nitro-diffusion-controlnet-slim`).
 
 ## Configuration
 
