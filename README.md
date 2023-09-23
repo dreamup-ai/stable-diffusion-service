@@ -74,18 +74,18 @@ There are several tags available that offer different levels of baked-in functio
 
 ### Base Images
 
-- `base`, `0.1.4`: This is the base image. It contains inference code and dependencies, but no models. It is intended to be used as a base for custom images, or in a situation where you want to mount models from a volume instead of baking them into the image. This is the recommended image to use if you are running this server locally, or in a cloud that supports elastic file systems (EFS).
-- `safety-checker`, `0.1.4-safety-checker`: This image contains the inference code and the safety checker models ONLY. This is really only intended to be a base image upon which you would load controlnet models and a stable diffusion model.
-- `controlnet-slim`, `0.1.4-controlnet-slim`: This image contains the inference code and the controlnet models that are used in Dreamup.ai production. It is intended to be used as a base model. It notably excludes the following controlnet models:
+- `base`, `0.1.5`: This is the base image. It contains inference code and dependencies, but no models. It is intended to be used as a base for custom images, or in a situation where you want to mount models from a volume instead of baking them into the image. This is the recommended image to use if you are running this server locally, or in a cloud that supports elastic file systems (EFS).
+- `safety-checker`, `0.1.5-safety-checker`: This image contains the inference code and the safety checker models ONLY. This is really only intended to be a base image upon which you would load controlnet models and a stable diffusion model.
+- `controlnet-slim`, `0.1.5-controlnet-slim`: This image contains the inference code and the controlnet models that are used in Dreamup.ai production. It is intended to be used as a base model. It notably excludes the following controlnet models:
   - segmentation
   - mlsd
   - shuffle
-- `controlnet-full`, `0.1.4-controlnet-full`: This image contains the inference code and all of the controlnet models. It is intended to be used as a base model.
+- `controlnet-full`, `0.1.5-controlnet-full`: This image contains the inference code and all of the controlnet models. It is intended to be used as a base model.
 
 ### Stable Diffusion Images
 
-- `nitrosocke-nitro-diffusion-controlnet-slim`, `0.1.4-nitrosocke-nitro-diffusion-controlnet-slim`: This image contains the inference code, the nitro-diffusion model, and the controlnet-slim models. It can be run directly for inference.
-- `lykon-dreamshaper-controlnet-slim`, `0.1.4-lykon-dreamshaper-controlnet-slim`: This image contains the inference code, the dreamshaper model, and the controlnet-slim models. It can be run directly for inference.
+- `nitrosocke-nitro-diffusion-controlnet-slim`, `0.1.5-nitrosocke-nitro-diffusion-controlnet-slim`: This image contains the inference code, the nitro-diffusion model, and the controlnet-slim models. It can be run directly for inference.
+- `lykon-dreamshaper-controlnet-slim`, `0.1.5-lykon-dreamshaper-controlnet-slim`: This image contains the inference code, the dreamshaper model, and the controlnet-slim models. It can be run directly for inference.
 
 ## Build Your Own Stable Diffusion Images
 
