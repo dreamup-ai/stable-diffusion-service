@@ -4,7 +4,7 @@ import os
 import time
 import xformers
 import triton
-from transformers import CLIPImageProcessor
+from transformers import CLIPImageProcessor, CLIPTextModel
 from diffusers import (
     StableDiffusionPipeline,
     StableDiffusionImg2ImgPipeline,
@@ -18,8 +18,14 @@ from sfast.compilers.stable_diffusion_pipeline_compiler import (
     compile,
     CompilationConfig,
 )
-
 import requests
+
+torch.backends.cuda.matmul.allow_tf32 = True
+
+print("Torch version:", torch.__version__, flush=True)
+print("XFormers version:", xformers.__version__, flush=True)
+print("Triton version:", triton.__version__, flush=True)
+print("CUDA Available:", torch.cuda.is_available(), flush=True)
 
 
 model_dir = os.getenv("MODEL_DIR", "/models")
@@ -34,6 +40,7 @@ safety_checker_model = os.getenv(
     "HF_SAFETY_CHECKER", "CompVis/stable-diffusion-safety-checker"
 )
 feature_extractor_model = os.getenv("HF_CLIP_MODEL", "openai/clip-vit-base-patch32")
+text_encoder_model = os.getenv("HF_TEXT_ENCODER", "openai/clip-vit-large-patch14")
 civitai_base_url = "https://civitai.com/api/v1/model-versions/"
 
 warmup_inputs = dict(
@@ -47,6 +54,7 @@ warmup_inputs = dict(
 compile_config = CompilationConfig.Default()
 compile_config.enable_xformers = True
 compile_config.enable_triton = True
+compile_config.enable_cuda_graph = False
 
 
 def load_safety_checker(load_only=False):
@@ -60,10 +68,20 @@ def load_safety_checker(load_only=False):
     feature_extractor = CLIPImageProcessor.from_pretrained(
         feature_extractor_model, torch_dtype=torch.float16, cache_dir=model_dir
     )
-    print(
-        "Loaded safety checker in %s seconds", time.perf_counter() - start, flush=True
-    )
+    print(f"Loaded safety checker in {time.perf_counter() - start} seconds", flush=True)
     return safety_checker, feature_extractor
+
+
+def load_text_encoder(load_only=False):
+    print("Loading text encoder...", flush=True)
+    start = time.perf_counter()
+    text_encoder = CLIPTextModel.from_pretrained(
+        text_encoder_model, torch_dtype=torch.float16, cache_dir=model_dir
+    )
+    if not load_only:
+        text_encoder.to("cuda")
+    print(f"Loaded text encoder in {time.perf_counter() - start} seconds", flush=True)
+    return text_encoder
 
 
 def load_controlnet_model_from_hf(model_name_or_path, load_only=False):
@@ -79,8 +97,7 @@ def load_controlnet_model_from_hf(model_name_or_path, load_only=False):
     if not load_only:
         model.to("cuda", memory_format=torch.channels_last)
     print(
-        f"Loaded controlnet model {model_name_or_path} in %s seconds",
-        time.perf_counter() - start,
+        f"Loaded controlnet model {model_name_or_path} in {time.perf_counter() - start} seconds",
         flush=True,
     )
     return model
@@ -139,8 +156,7 @@ def load_controlnet_model_from_civitai(model_version_id, load_only=False):
     if not load_only:
         model.to("cuda", memory_format=torch.channels_last)
     print(
-        f"Loaded controlnet model {model_name} in %s seconds",
-        time.perf_counter() - start,
+        f"Loaded controlnet model {model_name} in {time.perf_counter() - start} seconds",
         flush=True,
     )
     return model
@@ -156,51 +172,55 @@ def load_text2img_from_hf(model_id_or_path, load_only=False):
         feature_extractor=None,
         cache_dir=checkpoint_dir,
         low_cpu_mem_usage=True,
+        device_map="auto",
     )
     if load_only:
         return text2img
 
-    text2img.to("cuda", memory_format=torch.channels_last)
-
     print("Compiling pipeline...", flush=True)
     start = time.perf_counter()
+    text2img.to("cuda")
     text2img = compile(text2img, compile_config)
 
     text2img(**warmup_inputs)
-    print("Compiled pipeline in %s seconds", time.perf_counter() - start, flush=True)
+    print(f"Compiled pipeline in {time.perf_counter() - start} seconds", flush=True)
     return text2img
 
 
 def load_text2img_from_civitai(model_path, load_only=False):
     print(f"Loading checkpoint {model_path}...", flush=True)
     start = time.perf_counter()
+
     text2img = StableDiffusionPipeline.from_single_file(
         model_path,
         torch_dtype=torch.float16,
-        safety_checker=None,
-        feature_extractor=None,
+        load_safety_checker=False,
         low_cpu_mem_usage=True,
+        device_map="auto",
+        cache_dir=checkpoint_dir,
+        extract_ema=True,
     )
     if load_only:
         return text2img
 
-    text2img.to("cuda", memory_format=torch.channels_last)
-
     print("Compiling pipeline...", flush=True)
     start = time.perf_counter()
+    text2img.to("cuda")
+    text2img.text_encoder.eval()
+    text2img.unet.eval()
     text2img = compile(text2img, compile_config)
 
     text2img(**warmup_inputs)
-    print("Compiled pipeline in %s seconds", time.perf_counter() - start, flush=True)
+    print(f"Compiled pipeline in {time.perf_counter() - start} seconds", flush=True)
     return text2img
 
 
 def load_base_pipelines(text2img, load_only=False):
     img2img = StableDiffusionImg2ImgPipeline(**text2img.components)
     inpaint = StableDiffusionInpaintPipeline(**text2img.components)
-    if not load_only:
-        img2img.to("cuda")
-        inpaint.to("cuda")
+    # if not load_only:
+    #     img2img.to("cuda")
+    #     inpaint.to("cuda")
 
     return text2img, img2img, inpaint
 
@@ -211,8 +231,7 @@ def load_checkpoint_from_hf(model_id_or_path, load_only=False):
     text2img = load_text2img_from_hf(model_id_or_path, load_only)
     text2img, img2img, inpaint = load_base_pipelines(text2img, load_only)
     print(
-        f"Loaded checkpoint {model_id_or_path} in %s seconds",
-        time.perf_counter() - start,
+        f"Loaded checkpoint {model_id_or_path} in {time.perf_counter() - start} seconds",
         flush=True,
     )
 
