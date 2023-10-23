@@ -280,7 +280,7 @@ def get_pipeline_and_sanitizer(model_id, pipeline_type, controlnet_type=None):
         raise ValueError(f"Pipeline {pipeline_type} not found")
 
     if pipeline_type not in models[model_id]["pipelines"]:
-        kwargs = {**models[model_id]["pipelines"]["text2img"].pipeline.components}
+        kwargs = {**models[model_id]["pipelines"]["text2img"]["pipeline"].components}
         if pipeline_type == "controlnet" or pipeline_type == "controlnet_img2img":
             if not controlnet_type:
                 raise ValueError(f"Controlnet type not specified")
@@ -292,3 +292,8 @@ def get_pipeline_and_sanitizer(model_id, pipeline_type, controlnet_type=None):
             "pipeline": allowed_pipelines[pipeline_type](**kwargs),
             "sanitize": sanitizers[pipeline_type],
         }
+
+    return (
+        models[model_id]["pipelines"][pipeline_type]["pipeline"],
+        models[model_id]["pipelines"][pipeline_type]["sanitize"],
+    )
