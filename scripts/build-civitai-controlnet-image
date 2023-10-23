@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-HF_REPO=$1
+CIVITAI_MODEL_VERSION_ID=$1
 CONTROLNETS=${2:-slim}
 
 PYTHON=$(which python3 || which python)
@@ -7,8 +7,8 @@ VERSION=$($PYTHON -c 'from server.__version__ import VERSION; print(VERSION)')
 BASE_TAG=controlnet-$CONTROLNETS
 
 # Tag should be the repo name, but lowercase, with / replaced with -
-MY_TAG=$(echo $HF_REPO | tr '[:upper:]' '[:lower:]' | tr '/' '-')-controlnet
-DOCKERFILE=Dockerfile.huggingface-controlnet
+MY_TAG=$(echo $CIVITAI_MODEL_VERSION_ID | tr '[:upper:]' '[:lower:]' | tr '/' '-')-controlnet
+DOCKERFILE=Dockerfile.civitai-controlnet
 # -slim if BASE_TAG is slim, -full if full
 if [[ $BASE_TAG == *"slim"* ]]; then
   MY_TAG=$MY_TAG-slim
@@ -20,11 +20,11 @@ echo "Building $MY_TAG"
 
 docker build \
   -t public.ecr.aws/i0t3i1w9/stable-diffusion-server:$MY_TAG \
-  --build-arg BASE_TAG="$VERSION-$BASE_TAG" \
-  --build-arg HF_REPO="$HF_REPO" \
   --platform linux/amd64 \
   --output type=docker \
   --provenance false \
+  --build-arg BASE_TAG="$VERSION-$BASE_TAG" \
+  --build-arg CIVITAI_MODEL_VERSION_ID="$CIVITAI_MODEL_VERSION_ID" \
   -f $DOCKERFILE .
 docker tag public.ecr.aws/i0t3i1w9/stable-diffusion-server:$MY_TAG \
   public.ecr.aws/i0t3i1w9/stable-diffusion-server:$VERSION-$MY_TAG

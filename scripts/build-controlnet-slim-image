@@ -2,6 +2,13 @@
 PYTHON=$(which python3 || which python)
 VERSION=$($PYTHON -c 'from server.__version__ import VERSION; print(VERSION)')
 
-docker build -t public.ecr.aws/i0t3i1w9/stable-diffusion-server:controlnet-slim -f Dockerfile.controlnet-slim .
+docker build \
+  -t public.ecr.aws/i0t3i1w9/stable-diffusion-server:controlnet-slim \
+  -f Dockerfile.controlnet-slim \
+  --platform linux/amd64 \
+  --output type=docker \
+  --provenance false \
+  --build-arg VERSION=$VERSION-safety-checker \
+  .
 docker tag public.ecr.aws/i0t3i1w9/stable-diffusion-server:controlnet-slim \
   public.ecr.aws/i0t3i1w9/stable-diffusion-server:$VERSION-controlnet-slim

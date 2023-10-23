@@ -1,18 +1,10 @@
-FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:base
+ARG VERSION=base
+FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:${VERSION}
 
-RUN apt-get install wget
-
-ARG SAFETY_CHECKER_ID="CompVis/stable-diffusion-safety-checker"
-ARG FEATURE_EXTRACTOR_ID="openai/clip-vit-base-patch32"
-
+ARG HF_SAFETY_CHECKER="CompVis/stable-diffusion-safety-checker"
+ARG HF_CLIP_MODEL="openai/clip-vit-base-patch32"
+ENV HF_SAFETY_CHECKER=${HF_SAFETY_CHECKER}
+ENV HF_CLIP_MODEL=${HF_CLIP_MODEL}
 ENV MODEL_DIR=/models
 
-RUN git clone https://huggingface.co/${SAFETY_CHECKER_ID} \
-  ${MODEL_DIR}/${SAFETY_CHECKER_ID}
-RUN wget https://huggingface.co/${SAFETY_CHECKER_ID}/resolve/main/pytorch_model.bin \
-  -O ${MODEL_DIR}/${SAFETY_CHECKER_ID}/pytorch_model.bin
-
-RUN git clone https://huggingface.co/${FEATURE_EXTRACTOR_ID} \
-  ${MODEL_DIR}/${FEATURE_EXTRACTOR_ID}
-RUN wget https://huggingface.co/openai/clip-vit-base-patch32/resolve/main/pytorch_model.bin \
-  -O ${MODEL_DIR}/${FEATURE_EXTRACTOR_ID}/pytorch_model.bin
+RUN python -c "from server.model_loaders import load_safety_checker; load_safety_checker(True);"

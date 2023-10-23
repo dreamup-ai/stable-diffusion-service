@@ -56,12 +56,6 @@ def image():
         log.error("Model not found")
         return make_response(jsonify({"error": "Model not found"}), 400)
 
-    model = models[job["model"]]
-
-    if job["pipeline"] not in model["pipelines"]:
-        log.error("Pipeline not found")
-        return make_response(jsonify({"error": "Pipeline not found"}), 400)
-
     if "image" in job["params"]:
         try:
             image = Image.open(BytesIO(base64.b64decode(job["params"]["image"])))

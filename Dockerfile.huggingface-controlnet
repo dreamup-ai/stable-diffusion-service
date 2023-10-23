@@ -3,22 +3,7 @@ ARG BASE_TAG=controlnet-full
 FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:${BASE_TAG}
 
 ARG HF_REPO=Lykon/DreamShaper
-ARG MODEL_FMT=bin
 
+RUN python -c "from server.model_loaders import load_checkpoint_from_hf; load_checkpoint_from_hf('${HF_REPO}', True);"
 
-
-RUN git clone https://huggingface.co/${HF_REPO} \
-  /models/${HF_REPO}
-RUN if [ "${MODEL_FMT}" = "safetensors" ]; then \
-  wget https://huggingface.co/${HF_REPO}/resolve/main/text_encoder/model.${MODEL_FMT} \
-  -O /models/${HF_REPO}/text_encoder/model.${MODEL_FMT}; \
-  else \
-  wget https://huggingface.co/${HF_REPO}/resolve/main/text_encoder/pytorch_model.${MODEL_FMT} \
-  -O /models/${HF_REPO}/text_encoder/pytorch_model.${MODEL_FMT}; \
-  fi
-RUN wget https://huggingface.co/${HF_REPO}/resolve/main/unet/diffusion_pytorch_model.${MODEL_FMT} \
-  -O /models/${HF_REPO}/unet/diffusion_pytorch_model.${MODEL_FMT}
-RUN wget https://huggingface.co/${HF_REPO}/resolve/main/vae/diffusion_pytorch_model.${MODEL_FMT} \
-  -O /models/${HF_REPO}/vae/diffusion_pytorch_model.${MODEL_FMT}
-
-ENV MODELS=${HF_REPO}
+ENV HF_CHECKPOINTS=${HF_REPO}

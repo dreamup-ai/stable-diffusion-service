@@ -1,58 +1,33 @@
-FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:safety-checker
+ARG VERSION=safety-checker
+FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:${VERSION}
 
 # Get just the controlnet models we want to launch with
 # Canny
-RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_canny \
-  ${MODEL_DIR}/lllyasviel/control_v11p_sd15_canny
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_canny/resolve/main/diffusion_pytorch_model.fp16.safetensors \
-  -O ${MODEL_DIR}/lllyasviel/control_v11p_sd15_canny/diffusion_pytorch_model.safetensors
+RUN python -c "from server.model_loaders import load_controlnet_model_from_hf; load_controlnet_model_from_hf('lllyasviel/control_v11p_sd15_canny', True);"
 
 # Depth
-RUN git clone https://huggingface.co/lllyasviel/control_v11f1p_sd15_depth \
-  ${MODEL_DIR}/lllyasviel/control_v11f1p_sd15_depth
-RUN wget https://huggingface.co/lllyasviel/control_v11f1p_sd15_depth/resolve/main/diffusion_pytorch_model.fp16.safetensors \
-  -O ${MODEL_DIR}/lllyasviel/control_v11f1p_sd15_depth/diffusion_pytorch_model.safetensors
+RUN python -c "from server.model_loaders import load_controlnet_model_from_hf; load_controlnet_model_from_hf('lllyasviel/control_v11f1p_sd15_depth', True);"
 
 # Normalbae
-RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_normalbae \
-  ${MODEL_DIR}/lllyasviel/control_v11p_sd15_normalbae
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_normalbae/resolve/main/diffusion_pytorch_model.fp16.safetensors \
-  -O ${MODEL_DIR}/lllyasviel/control_v11p_sd15_normalbae/diffusion_pytorch_model.safetensors
+RUN python -c "from server.model_loaders import load_controlnet_model_from_hf; load_controlnet_model_from_hf('lllyasviel/control_v11p_sd15_normalbae', True);"
 
 # Openpose
-RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_openpose \
-  ${MODEL_DIR}/lllyasviel/control_v11p_sd15_openpose
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_openpose/resolve/main/diffusion_pytorch_model.fp16.safetensors \
-  -O ${MODEL_DIR}/lllyasviel/control_v11p_sd15_openpose/diffusion_pytorch_model.safetensors
+RUN python -c "from server.model_loaders import load_controlnet_model_from_hf; load_controlnet_model_from_hf('lllyasviel/control_v11p_sd15_openpose', True);"
 
 # Scribble
-RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_scribble \
-  ${MODEL_DIR}/lllyasviel/control_v11p_sd15_scribble
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_scribble/resolve/main/diffusion_pytorch_model.fp16.safetensors \
-  -O ${MODEL_DIR}/lllyasviel/control_v11p_sd15_scribble/diffusion_pytorch_model.safetensors
+RUN python -c "from server.model_loaders import load_controlnet_model_from_hf; load_controlnet_model_from_hf('lllyasviel/control_v11p_sd15_scribble', True);"
 
 # Softedge
-RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_softedge \
-  ${MODEL_DIR}/lllyasviel/control_v11p_sd15_softedge
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_softedge/resolve/main/diffusion_pytorch_model.fp16.safetensors \
-  -O ${MODEL_DIR}/lllyasviel/control_v11p_sd15_softedge/diffusion_pytorch_model.safetensors
+RUN python -c "from server.model_loaders import load_controlnet_model_from_hf; load_controlnet_model_from_hf('lllyasviel/control_v11p_sd15_softedge', True);"
 
 # Lineart
-RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15_lineart \
-  ${MODEL_DIR}/lllyasviel/control_v11p_sd15_lineart
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15_lineart/resolve/main/diffusion_pytorch_model.fp16.safetensors \
-  -O ${MODEL_DIR}/lllyasviel/control_v11p_sd15_lineart/diffusion_pytorch_model.safetensors
+RUN python -c "from server.model_loaders import load_controlnet_model_from_hf; load_controlnet_model_from_hf('lllyasviel/control_v11p_sd15_lineart', True);"
 
 # Lineart Anime
-RUN git clone https://huggingface.co/lllyasviel/control_v11p_sd15s2_lineart_anime \
-  ${MODEL_DIR}/lllyasviel/control_v11p_sd15s2_lineart_anime
-RUN wget https://huggingface.co/lllyasviel/control_v11p_sd15s2_lineart_anime/resolve/main/diffusion_pytorch_model.fp16.safetensors \
-  -O ${MODEL_DIR}/lllyasviel/control_v11p_sd15s2_lineart_anime/diffusion_pytorch_model.safetensors
+RUN python -c "from server.model_loaders import load_controlnet_model_from_hf; load_controlnet_model_from_hf('lllyasviel/control_v11p_sd15s2_lineart_anime', True);"
 
 # QR Code
-RUN git clone https://huggingface.co/DionTimmer/controlnet_qrcode \
-  ${MODEL_DIR}/DionTimmer/controlnet_qrcode
-RUN wget https://huggingface.co/DionTimmer/controlnet_qrcode/resolve/main/diffusion_pytorch_model.fp16.safetensors \
-  -O ${MODEL_DIR}/DionTimmer/controlnet_qrcode/diffusion_pytorch_model.safetensors
+RUN python -c "from server.model_loaders import load_controlnet_model_from_civitai; load_controlnet_model_from_civitai('122143', True);"
 
-ENV CONTROLNET_MODELS=canny,depth,normal,openpose,scribble,softedge,lineart,lineart_anime,qr_code
+ENV HF_CONTROLNET_MODELS="lllyasviel/control_v11p_sd15_canny,lllyasviel/control_v11f1p_sd15_depth,lllyasviel/control_v11p_sd15_normalbae,lllyasviel/control_v11p_sd15_openpose,lllyasviel/control_v11p_sd15_scribble,lllyasviel/control_v11p_sd15_softedge,lllyasviel/control_v11p_sd15_lineart,lllyasviel/control_v11p_sd15s2_lineart_anime"
+ENV CIVITAI_CONTROLNET_MODELS="122143"

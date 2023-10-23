@@ -1,0 +1,11 @@
+ARG BASE_TAG=controlnet-full
+
+FROM public.ecr.aws/i0t3i1w9/stable-diffusion-server:${BASE_TAG}
+
+ARG CIVITAI_MODEL_VERSION_ID=128713
+
+COPY server/model_loaders.py server/model_loaders.py
+
+RUN python -c "from server.model_loaders import load_checkpoint_from_civitai; load_checkpoint_from_civitai('${CIVITAI_MODEL_VERSION_ID}', True);"
+
+ENV CIVITAI_CHECKPOINTS=${CIVITAI_MODEL_VERSION_ID}

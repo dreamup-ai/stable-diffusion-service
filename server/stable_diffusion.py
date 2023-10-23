@@ -7,7 +7,7 @@ from stable_diffusion_models import (
     safety_checker,
     feature_extractor,
     controlnet_models,
-    controlnet_img2img_models,
+    get_pipeline_and_sanitizer,
 )
 from PIL import Image
 from prompt_tools import get_prompt_embeds
@@ -37,14 +37,16 @@ def generate_image(job):
     model_id = job["model"]
     pipeline_id = job["pipeline"]
     params = job["params"]
-    if model_id not in models:
-        logging.error(f"Model {model_id} not found")
-        return None, None, None, None, None
-    model = models[model_id]
-    if pipeline_id not in model["pipelines"]:
-        logging.error(f"Pipeline {pipeline_id} not found for model {model_id}")
+    control_model = None
+    if "control_model" in params:
+        control_model = params["control_model"]
+    try:
+        pipe, clean = get_pipeline_and_sanitizer(model_id, pipeline_id, control_model)
+    except Exception as e:
+        logging.error(e)
         return None, None, None, None, None
 
+    model = models[model_id]
     pipe = model["pipelines"][pipeline_id]["pipeline"]
     clean = model["pipelines"][pipeline_id]["sanitize"]
     compel = model["compel"]
@@ -88,25 +90,6 @@ def generate_image(job):
 
     if "control_image" in params:
         params["control_image"] = resize_image(params["control_image"])
-
-    if pipeline_id == "controlnet":
-        if "control_model" not in params:
-            logging.error("Control model not specified")
-            return None, None, None, None, None
-        control_model = params["control_model"]
-        if control_model not in controlnet_models:
-            logging.error(f"Control model {control_model} not found")
-            return None, None, None, None, None
-        pipe.controlnet = controlnet_models[control_model]
-    elif pipeline_id == "controlnet_img2img":
-        if "control_model" not in params:
-            logging.error("Control model not specified")
-            return None, None, None, None, None
-        control_model = params["control_model"]
-        if control_model not in controlnet_img2img_models:
-            logging.error(f"Control model {control_model} not found")
-            return None, None, None, None, None
-        pipe.controlnet = controlnet_img2img_models[control_model]
 
     if "seed" in params:
         seed = params["seed"]

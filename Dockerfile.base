@@ -10,7 +10,9 @@ RUN apt-get update && apt-get install --no-install-recommends --no-install-sugge
   unzip \
   libgl1 \
   libglib2.0-0 \
-  build-essential
+  build-essential \
+  libgoogle-perftools-dev \
+  wget
 
 # We need the latest pip
 RUN pip install --upgrade --no-cache-dir pip
@@ -18,7 +20,11 @@ RUN pip install --upgrade --no-cache-dir pip
 
 # Install dependencies
 COPY requirements.txt .
+ENV TORCH_CUDA_ARCH_LIST=All
+ENV MAX_JOBS=4
+ENV LD_PRELOAD=libtcmalloc.so.4
 RUN pip install --upgrade --no-cache-dir -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu121
+RUN pip install -v -U git+https://github.com/chengzeyi/stable-fast.git@v0.0.2
 
 COPY ./server ./server
 
