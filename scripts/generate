@@ -1,0 +1,208 @@
+#! /usr/bin/env bash
+
+set -eo pipefail
+
+# Usage: ./generate [--pipeline pipeline] [--prompt prompt] [--width w] [--height h] [--num_inference_steps n] [--scheduler scheduler] [--negative_prompt negative_prompt] [--guidance_scale guidance_scale] [--model model] [--image image_file] [--control-model control_model] [--help]
+# Example: ./generate --pipeline text2img --prompt "cat on a bench" --negative_prompt "ugly" --num_inference_steps 15 --scheduler EulerAncestralDiscreteScheduler --guidance_scale 7.5 --width 512 --height 512 --model 128713
+
+# Defaults
+pipeline="text2img"
+prompt="cat on a bench"
+negative_prompt="ugly"
+num_inference_steps=15
+scheduler="EulerAncestralDiscreteScheduler"
+guidance_scale=7.5
+width=512
+height=512
+model="128713"
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  i="$1"
+  case $i in
+  -p=* | --pipeline=*)
+    pipeline="${i#*=}"
+    shift # past argument=value
+    ;;
+  -p | --pipeline)
+    pipeline="$2"
+    shift # past argument=value
+    shift # past value
+    ;;
+  -pr=* | --prompt=*)
+    prompt="${i#*=}"
+    shift # past argument=value
+    ;;
+  -pr | --prompt)
+    prompt="$2"
+    shift # past argument=value
+    shift # past value
+    ;;
+  -np=* | --negative_prompt=*)
+    negative_prompt="${i#*=}"
+    shift # past argument=value
+    ;;
+  -np | --negative_prompt)
+    negative_prompt="$2"
+    shift # past argument=value
+    shift # past value
+    ;;
+  -n=* | --num_inference_steps=*)
+    num_inference_steps="${i#*=}"
+    shift # past argument=value
+    ;;
+  -n | --num_inference_steps)
+    num_inference_steps="$2"
+    shift # past argument=value
+    shift # past value
+    ;;
+  -s=* | --scheduler=*)
+    scheduler="${i#*=}"
+    shift # past argument=value
+    ;;
+  -s | --scheduler)
+    scheduler="$2"
+    shift # past argument=value
+    shift # past value
+    ;;
+  -gs=* | --guidance_scale=*)
+    guidance_scale="${i#*=}"
+    shift # past argument=value
+    ;;
+  -gs | --guidance_scale)
+    guidance_scale="$2"
+    shift # past argument=value
+    shift # past value
+    ;;
+  -w=* | --width=*)
+    width="${i#*=}"
+    shift # past argument=value
+    ;;
+  -w | --width)
+    width="$2"
+    shift # past argument=value
+    shift # past value
+    ;;
+  -h=* | --height=*)
+    height="${i#*=}"
+    shift # past argument=value
+    ;;
+  -h | --height)
+    height="$2"
+    shift # past argument=value
+    shift # past value
+    ;;
+  -m=* | --model=*)
+    model="${i#*=}"
+    shift # past argument=value
+    ;;
+  -m | --model)
+    model="$2"
+    shift # past argument=value
+    shift # past value
+    ;;
+  -i=* | --image=*)
+    image="${i#*=}"
+    shift # past argument=value
+    ;;
+  -i | --image)
+    image="$2"
+    shift # past argument=value
+    shift # past value
+    ;;
+  -cm=* | --control-model=*)
+    control_model="${i#*=}"
+    shift # past argument=value
+    ;;
+  -cm | --control-model)
+    control_model="$2"
+    shift # past argument=value
+    shift # past value
+    ;;
+  -h | --help)
+    echo "Usage: ./generate [--pipeline pipeline] [--prompt prompt] [--width w] [--height h] [--num_inference_steps n] [--scheduler scheduler] [--negative_prompt negative_prompt] [--guidance_scale guidance_scale] [--model model] [--help]"
+    echo "Example: ./generate --pipeline text2img --prompt \"cat on a bench\" --negative_prompt \"ugly\" --num_inference_steps 15 --scheduler EulerAncestralDiscreteScheduler --guidance_scale 7.5 --width 512 --height 512"
+    exit 0
+    ;;
+  *)
+    echo "Unknown option: ${i}"
+    exit 1
+    ;;
+  esac
+done
+
+random_id=$(uuidgen)
+user_id=$(uuidgen)
+output_key="${random_id}.png"
+
+function generate_text2img_payload() {
+  cat <<EOF
+{
+  "id": "${random_id}",
+  "user_id": "${user_id}",
+  "model": "${model}",
+  "pipeline": "text2img",
+  "output_key": "${output_key}",
+  "params": {
+    "prompt": "${prompt}",
+    "negative_prompt": "${negative_prompt}",
+    "num_inference_steps": ${num_inference_steps},
+    "guidance_scale": ${guidance_scale},
+    "width": ${width},
+    "height": ${height},
+    "scheduler": "${scheduler}"
+  }
+}
+EOF
+}
+
+function generate_controlnet_payload() {
+  if [ -z "$image" ]; then
+    echo "Image is required for controlnet pipeline"
+    exit 1
+  fi
+  if [ -z "$control_model" ]; then
+    echo "Control model is required for controlnet pipeline"
+    exit 1
+  fi
+  encoded_image=$(base64 -w 0 $image)
+  cat <<EOF
+{
+  "id": "${random_id}",
+  "user_id": "${user_id}",
+  "model": "${model}",
+  "pipeline": "controlnet",
+  "output_key": "${output_key}",
+  "params": {
+    "image": "${encoded_image}",
+    "control_model": "${control_model}",
+    "width": ${width},
+    "height": ${height},
+    "scheduler": "${scheduler}",
+    "num_inference_steps": ${num_inference_steps},
+    "guidance_scale": ${guidance_scale},
+    "prompt": "${prompt}",
+    "negative_prompt": "${negative_prompt}"
+  }
+}
+EOF
+}
+
+if [ "$pipeline" == "text2img" ]; then
+  payload=$(generate_text2img_payload)
+elif [ "$pipeline" == "controlnet" ]; then
+  payload=$(generate_controlnet_payload)
+else
+  echo "Unknown pipeline: ${pipeline}"
+  exit 1
+fi
+
+echo "Sending payload: ${payload}"
+resp=$(curl -X POST http://localhost:1111/image \
+  -H "Content-Type: application/json" \
+  -d "${payload}")
+echo "Image Generated In $(echo $resp | jq -r '.request_duration') Seconds"
+
+echo "Downloading image to ./output/${output_key}"
+mkdir -p output
+echo $resp | jq -r '.image' | base64 -d >output/${output_key}

@@ -288,8 +288,11 @@ def get_pipeline_and_sanitizer(model_id, pipeline_type, controlnet_type=None):
                 raise ValueError(f"Controlnet {controlnet_type} not found")
             kwargs["controlnet"] = controlnet_models[controlnet_type]
 
+        pipe = allowed_pipelines[pipeline_type](**kwargs)
+        pipe.to("cuda")
+
         models[model_id]["pipelines"][pipeline_type] = {
-            "pipeline": allowed_pipelines[pipeline_type](**kwargs),
+            "pipeline": pipe,
             "sanitize": sanitizers[pipeline_type],
         }
 

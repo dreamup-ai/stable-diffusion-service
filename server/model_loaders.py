@@ -55,6 +55,7 @@ compile_config = CompilationConfig.Default()
 compile_config.enable_xformers = True
 compile_config.enable_triton = True
 compile_config.enable_cuda_graph = False
+compile_config.memory_format = torch.channels_last
 
 
 def load_safety_checker(load_only=False):
